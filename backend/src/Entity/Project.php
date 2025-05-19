@@ -46,6 +46,9 @@ class Project
     #[ORM\Column]
     private ?bool $isActive = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $link = null;
+
     public function __construct()
     {
         $this->student = new ArrayCollection();
@@ -152,6 +155,18 @@ class Project
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getLink(): ?string
+    {
+        return $this->link;
+    }
+
+    public function setLink(?string $link): static
+    {
+        $this->link = $link;
 
         return $this;
     }

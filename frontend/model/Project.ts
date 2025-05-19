@@ -3,5 +3,7 @@ export type Project = {
     title: string;
     description: string;
     date: number;
+    image: string[];
+    link: string;
     isActive: boolean;
 };

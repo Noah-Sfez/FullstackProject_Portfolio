@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use ApiPlatform\Metadata\ApiResource;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -64,16 +62,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     private ?string $plainPassword = null;
 
-    /**
-     * @var Collection<int, Article>
-     */
-    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'author', orphanRemoval: true)]
-    private Collection $articles;
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
 
-    public function __construct()
-    {
-        $this->articles = new ArrayCollection();
-    }
+    #[ORM\Column(length: 255)]
+    private ?string $surname = null;
 
     public function getId(): ?int
     {
@@ -159,32 +152,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Article>
-     */
-    public function getArticles(): Collection
+    public function getName(): ?string
     {
-        return $this->articles;
+        return $this->name;
     }
 
-    public function addArticle(Article $article): static
+    public function setName(string $name): static
     {
-        if (!$this->articles->contains($article)) {
-            $this->articles->add($article);
-            $article->setAuthor($this);
-        }
+        $this->name = $name;
 
         return $this;
     }
 
-    public function removeArticle(Article $article): static
+    public function getSurname(): ?string
     {
-        if ($this->articles->removeElement($article)) {
-            // set the owning side to null (unless already changed)
-            if ($article->getAuthor() === $this) {
-                $article->setAuthor(null);
-            }
-        }
+        return $this->surname;
+    }
+
+    public function setSurname(string $surname): static
+    {
+        $this->surname = $surname;
 
         return $this;
     }

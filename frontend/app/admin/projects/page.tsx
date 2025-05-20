@@ -3,14 +3,21 @@
 import { useEffect, useState } from "react";
 import { Table, Button, Space, Popconfirm, Tag, message } from "antd";
 import Link from "next/link";
+import { Project } from "@/model/Project";
 
 export default function AdminProjectsPage() {
     const [projects, setProjects] = useState([]);
 
     const fetchProjects = async () => {
-        const res = await fetch("/api/admin/projects");
-        const data = await res.json();
-        setProjects(data);
+        const res = await fetch("/api/projects");
+        const text = await res.text(); // 👈 pour voir la réponse brute
+        console.log("Réponse brute :", text);
+        try {
+            const data = JSON.parse(text);
+            setProjects(data);
+        } catch (error) {
+            console.error("Erreur de parsing JSON :", error);
+        }
     };
 
     useEffect(() => {
@@ -49,6 +56,11 @@ export default function AdminProjectsPage() {
         {
             title: "Nom",
             dataIndex: "name",
+            render: (record: Project) => (
+                <Link href={`/admin/projects/${record.id}`}>
+                    {record.title}
+                </Link>
+            ),
         },
         {
             title: "Statut",
@@ -62,14 +74,14 @@ export default function AdminProjectsPage() {
         },
         {
             title: "Actions",
-            render: (_: any, record: any) => (
+            render: (_: any, record: Project) => (
                 <Space>
                     <Button
                         onClick={() =>
-                            togglePublish(record.id, !record.published)
+                            togglePublish(record.id, !record.isActive)
                         }
                     >
-                        {record.published ? "Cacher" : "Publier"}
+                        {record.isActive ? "Cacher" : "Publier"}
                     </Button>
                     <Popconfirm
                         title="Supprimer définitivement ?"

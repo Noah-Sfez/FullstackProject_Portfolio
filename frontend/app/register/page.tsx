@@ -12,12 +12,13 @@ import Head from "next/head";
 import { Form, Input, Button, message } from "antd";
 import { useState, useId, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { useRouter } from "next/navigation";
 
 export default function SimpleRegisterPage() {
-    /* --------------------------- State & refs --------------------------- */
     const [loading, setLoading] = useState(false);
     const titleId = useId();
     const cardRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
 
     /* --------------------------- Animations (GSAP) --------------------------- */
     useLayoutEffect(() => {
@@ -79,7 +80,8 @@ export default function SimpleRegisterPage() {
             if (!res.ok)
                 throw new Error("Erreur serveur, réessayez plus tard.");
             message.success("Inscription réussie ! 🎉");
-            // TODO : redirection (router.push("/login"))
+            // TODO : redirection (router.push("/admin/projects"))
+            router.push("/admin/projects");
         } catch (err: any) {
             message.error(err.message || "Une erreur est survenue");
         } finally {

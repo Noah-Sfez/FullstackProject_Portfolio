@@ -64,26 +64,17 @@ export default function RegisterPage() {
                 />
             </Head>
 
-            {/* Skip‑link pour clavier */}
-            <a
-                href="#register-form"
-                className="sr-only focus:not-sr-only absolute top-0 left-0 z-50 bg-black text-white p-2"
-            >
-                Aller directement au formulaire
-            </a>
-
             <main
-                className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-blue-100 to-indigo-200 overflow-auto"
+                className="flex items-center justify-center mt-4 bg-gradient-to-br from-indigo-50 via-blue-100 to-indigo-200 overflow-hidden"
                 aria-labelledby={titleId}
             >
-                <div className="w-full max-w-md bg-white/95 rounded-xl shadow-lg p-6 md:p-8">
+                <div className="w-full h-screen w-screen max-w-md h-full bg-white/95 rounded-xl shadow-lg p-4 md:p-6 flex flex-col justify-center">
                     <h1
                         id={titleId}
-                        className="text-3xl font-bold text-center mb-6 text-indigo-700"
+                        className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6 text-indigo-700"
                     >
                         Formulaire d&#39;inscription 📚
                     </h1>
-
                     <Form
                         id="register-form"
                         layout="vertical"
@@ -91,6 +82,7 @@ export default function RegisterPage() {
                         autoComplete="off"
                         aria-describedby="form-instructions"
                         noValidate
+                        className="flex flex-col flex-1 justify-center"
                     >
                         {/* Champ honeypot anti‑robots (invisible) */}
                         <input
@@ -230,7 +222,7 @@ export default function RegisterPage() {
                             ]}
                         >
                             <Input.TextArea
-                                rows={4}
+                                rows={2}
                                 placeholder="Je souhaite rejoindre l’école car…"
                                 aria-required="true"
                             />

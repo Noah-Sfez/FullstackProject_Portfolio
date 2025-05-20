@@ -12,7 +12,7 @@
 */
 
 import Head from "next/head";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button, message, Checkbox } from "antd";
 import { useState, useId, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -83,7 +83,6 @@ export default function LoginPage() {
     }, []);
 
     /* ------------- Handler formulaire ------------- */
-    // ...existing code...
     const onFinish = async (values: any) => {
         setLoading(true);
         try {
@@ -102,7 +101,7 @@ export default function LoginPage() {
             const token = data.token;
             console.log("Token:", token);
             await createCookie(token); // Crée le cookie avec le token
-            router.push("/admin/projects"); // Redirige vers la page admin
+            router.push("/"); // Redirige vers la page admin
 
             // TODO : redirige l'utilisateur si besoin (router.push("/admin/projects"))
         } catch (err: any) {

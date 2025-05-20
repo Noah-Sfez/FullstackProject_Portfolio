@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping as ORM;
     denormalizationContext: ['groups' => ['write']],
     operations: [
         new GetCollection(
-            security: "is_granted('ROLE_ADMIN')",
+            security: "is_granted('ROLE_USER')",
             securityMessage: 'Acces refused : you are not allowed to see this project.'
         ),
         new Post(
@@ -29,7 +29,7 @@ use Doctrine\ORM\Mapping as ORM;
             securityMessage: 'Acces refused : you are not allowed to create this project.'
         ),
         new GetCollection(
-            security: "is_granted('ROLE_ADMIN') or object.owner == user",
+            security: "is_granted('ROLE_USER') or object.owner == user",
             securityMessage: 'Acces refused : you are not allowed to see this project.'
         ),
         new Patch(

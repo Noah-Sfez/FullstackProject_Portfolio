@@ -59,13 +59,22 @@ export default function SimpleRegisterPage() {
     }, []);
 
     /* --------------------------- Submit handler --------------------------- */
+    // ...existing code...
     const onFinish = async (values: any) => {
         setLoading(true);
         try {
-            const res = await fetch("/register", {
+            const apiUrl =
+                process.env.NEXT_PUBLIC_API_URL || "https://127.0.0.1:8000";
+            const res = await fetch(`${apiUrl}api/users`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(values),
+                body: JSON.stringify({
+                    email: values.email,
+                    roles: ["ROLE_USER"],
+                    plainPassword: values.password,
+                    name: values.lastName,
+                    surname: values.firstName,
+                }),
             });
             if (!res.ok)
                 throw new Error("Erreur serveur, réessayez plus tard.");
@@ -77,6 +86,7 @@ export default function SimpleRegisterPage() {
             setLoading(false);
         }
     };
+    // ...existing code...
 
     /* --------------------------- Structured data --------------------------- */
     const schemaOrg = {

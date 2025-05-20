@@ -63,11 +63,7 @@ export default function AdminProjectsPage() {
         {
             title: "Title",
             render: (record: Project) => (
-                <Link
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${record.id}`}
-                >
-                    {record.title}
-                </Link>
+                <Link href={`/api/projects/${record.id}`}>{record.title}</Link>
             ),
         },
         {

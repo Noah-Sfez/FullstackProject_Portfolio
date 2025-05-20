@@ -8,7 +8,7 @@
    • Fade-in de la carte + pulse sur le CTA (GSAP optionnel)
 ------------------------------------------------------------------- */
 
-import { useState, useLayoutEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import {
     Form,
     Input,
@@ -18,6 +18,7 @@ import {
     Upload,
     Switch,
     InputNumber,
+    Select,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { getToken } from "@/utils/jwt";
@@ -30,9 +31,10 @@ export default function AddProject() {
     /* ---------------- State ---------------- */
     const [loading, setLoading] = useState(false);
     const [imageUrls, setImageUrls] = useState<string[]>([]);
-    const [students, setStudents] = useState([
-        { name: "", surname: "", projects: [""] },
-    ]);
+    const [students, setStudents] = useState<string[]>([]); // IDs sélectionnés
+    const [availableStudents, setAvailableStudents] = useState<
+        { id: string; name: string; surname: string }[]
+    >([]);
     const cardRef = useRef<HTMLDivElement | null>(null);
 
     /* --------------- Animations --------------- */
@@ -69,35 +71,32 @@ export default function AddProject() {
         return () => ctx.revert();
     }, []);
 
+    /* --------------- Fetch Students --------------- */
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/students`)
+            .then((res) => res.json())
+            .then((data) => {
+                // Adapter selon la structure de retour de l'API
+                setAvailableStudents(data["hydra:member"] || data);
+            });
+    }, []);
+
     /* --------------- Handlers --------------- */
-    const handleStudentChange = (
-        index: number,
-        field: string,
-        value: string
-    ) => {
-        const updated = [...students];
-        updated[index][field] = value;
-        setStudents(updated);
-    };
-
-    const addStudent = () => {
-        setStudents([...students, { name: "", surname: "", projects: [""] }]);
-    };
-
     const handleSubmit = async (values: any) => {
         setLoading(true);
         try {
             const token = await getToken();
-
-            // Nettoie les étudiants pour garantir la structure attendue
-            const cleanedStudents = students.map((s) => ({
-                name: s.name,
-                surname: s.surname,
-                projects:
-                    Array.isArray(s.projects) && s.projects.length > 0
-                        ? s.projects
-                        : [""], // Toujours un tableau de string
-            }));
+            const body = {
+                title: values.title,
+                description: values.description,
+                date: Number(values.date),
+                techno: values.techno,
+                students: students.map((id) => `api/students/${id}`),
+                media: imageUrls,
+                isActive: values.isActive,
+                link: values.link,
+            };
+            console.log("Body envoyé :", body); // <-- Ajoute ceci
 
             const res = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/projects`,
@@ -107,18 +106,11 @@ export default function AddProject() {
                         "Content-Type": "application/ld+json",
                         Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify({
-                        title: values.title,
-                        description: values.description,
-                        date: Number(values.date), // Force en number
-                        techno: values.techno,
-                        student: cleanedStudents,
-                        media: imageUrls,
-                        isActive: values.isActive,
-                        link: values.link,
-                    }),
+                    body: JSON.stringify(body),
                 }
             );
+            console.log(res);
+            
             const data = await res.json();
             if (res.ok) message.success("Projet ajouté avec succès !");
             else
@@ -242,42 +234,25 @@ export default function AddProject() {
                         <label className="block font-medium mb-1">
                             Étudiants
                         </label>
-                        {students.map((student, idx) => (
-                            <div key={idx} className="mb-2 flex gap-2">
-                                <Input
-                                    placeholder="Nom"
-                                    value={student.name}
-                                    onChange={(e) =>
-                                        handleStudentChange(
-                                            idx,
-                                            "name",
-                                            e.target.value
-                                        )
-                                    }
-                                    className="focus:ring-indigo-400"
-                                />
-                                <Input
-                                    placeholder="Prénom"
-                                    value={student.surname}
-                                    onChange={(e) =>
-                                        handleStudentChange(
-                                            idx,
-                                            "surname",
-                                            e.target.value
-                                        )
-                                    }
-                                    className="focus:ring-indigo-400"
-                                />
-                                {/* Optionnel: gestion des projets */}
-                            </div>
-                        ))}
-                        <Button
-                            type="dashed"
-                            onClick={addStudent}
-                            className="mt-1"
+                        <Select
+                            mode="multiple"
+                            allowClear
+                            placeholder="Sélectionnez les étudiants"
+                            value={students}
+                            onChange={setStudents}
+                            className="w-full"
+                            optionLabelProp="label"
                         >
-                            Ajouter un étudiant
-                        </Button>
+                            {availableStudents.map((student) => (
+                                <Select.Option
+                                    key={student.id}
+                                    value={student.id}
+                                    label={`${student.name} ${student.surname}`}
+                                >
+                                    {student.name} {student.surname}
+                                </Select.Option>
+                            ))}
+                        </Select>
                     </div>
 
                     <Form.Item label="Images (plusieurs possibles)">

@@ -18,6 +18,8 @@ import {
     Upload,
     Switch,
     InputNumber,
+    UploadProps,
+    Space,
     Select,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
@@ -110,7 +112,7 @@ export default function AddProject() {
                 }
             );
             console.log(res);
-            
+
             const data = await res.json();
             if (res.ok) message.success("Projet ajouté avec succès !");
             else
@@ -130,6 +132,50 @@ export default function AddProject() {
             .filter((file: any) => file.status === "done" && file.response?.url)
             .map((file: any) => file.response.url);
         setImageUrls(uploadedFiles);
+    };
+
+    const props: UploadProps = {
+        name: "filePath",
+        action: `${process.env.NEXT_PUBLIC_API_URL}/api/media`,
+
+        onChange(info) {
+            if (info.file.status !== "uploading") {
+                console.log("aa", info.file, info.fileList);
+            }
+            if (info.file.status === "done") {
+                message.success(`file uploaded successfully ${info.file.name}`);
+            } else if (info.file.status === "error") {
+                message.error(`file upload failed ${info.file.name}.`);
+            }
+        },
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        if (file) {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            console.log(file);
+
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/media`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${getToken()}`,
+                    // ContentType: "multipart/form-data",
+                },
+                body: formData,
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setImageUrls((prev) => [...prev, data.url]);
+                    message.success("Images uploadées avec succès !");
+                })
+                .catch((err) => {
+                    console.error(err);
+                    message.error("Erreur lors de l'upload des images");
+                });
+        }
     };
 
     /* ---------------- JSX ---------------- */
@@ -230,44 +276,74 @@ export default function AddProject() {
                         />
                     </Form.Item>
 
-                    <div>
+                    <Space>
                         <label className="block font-medium mb-1">
                             Étudiants
                         </label>
-                        <Select
-                            mode="multiple"
-                            allowClear
-                            placeholder="Sélectionnez les étudiants"
-                            value={students}
-                            onChange={setStudents}
-                            className="w-full"
-                            optionLabelProp="label"
-                        >
-                            {availableStudents.map((student) => (
-                                <Select.Option
-                                    key={student.id}
-                                    value={student.id}
-                                    label={`${student.name} ${student.surname}`}
-                                >
-                                    {student.name} {student.surname}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </div>
+                        {students.map((student, idx) => (
+                            <div key={idx} className="mb-2 flex gap-2">
+                                <Input
+                                    placeholder="Nom"
+                                    value={students}
+                                    // onChange={(e) =>
+                                    //     handleStudentChange(
+                                    //         idx,
+                                    //         "name",
+                                    //         e.target.value
+                                    //     )
+                                    // }
+                                    className="focus:ring-indigo-400"
+                                />
+                                <Input
+                                    placeholder="Prénom"
+                                    value={students}
+                                    // onChange={(e) =>
+                                    //     handleStudentChange(
+                                    //         idx,
+                                    //         "surname",
+                                    //         e.target.value
+                                    //     )
+                                    // }
+                                    className="focus:ring-indigo-400"
+                                />
+                                {/* Optionnel: gestion des projets */}
+                            </div>
+                        ))}
+                        <Button type="dashed" className="mt-1">
+                            Ajouter un étudiant
+                        </Button>
+                    </Space>
+                    <Select
+                        mode="multiple"
+                        allowClear
+                        placeholder="Sélectionnez les étudiants"
+                        value={students}
+                        onChange={setStudents}
+                        className="w-full"
+                        optionLabelProp="label"
+                    >
+                        {availableStudents.map((student) => (
+                            <Select.Option
+                                key={student.id}
+                                value={student.id}
+                                label={`${student.name} ${student.surname}`}
+                            >
+                                {student.name} {student.surname}
+                            </Select.Option>
+                        ))}
+                    </Select>
 
                     <Form.Item label="Images (plusieurs possibles)">
-                        <Upload
-                            name="file"
-                            action={`${process.env.NEXT_PUBLIC_API_URL}/api/upload`}
-                            onChange={handleImageUpload}
-                            multiple
-                            listType="picture"
-                            className="w-full"
-                        >
+                        {/* <Upload {...props}>
                             <Button icon={<UploadOutlined />}>
                                 Uploader des images
                             </Button>
-                        </Upload>
+                        </Upload> */}
+                        <input
+                            type="file"
+                            name="file"
+                            onChange={handleFileChange}
+                        />
                     </Form.Item>
 
                     <Form.Item

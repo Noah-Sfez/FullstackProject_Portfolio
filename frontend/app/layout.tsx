@@ -1,5 +1,6 @@
+import "@ant-design/v5-patch-for-react-19";
 import Menu from "@/components/Menu";
-import './globals.css'
+import "./globals.css";
 
 export default function RootLayout({
     children,

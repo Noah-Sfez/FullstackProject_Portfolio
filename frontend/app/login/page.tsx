@@ -12,7 +12,7 @@
 */
 
 import Head from "next/head";
-import { Form, Input, Button, message, Checkbox } from "antd";
+import { Form, Input, Button, message } from "antd";
 import { useState, useId, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

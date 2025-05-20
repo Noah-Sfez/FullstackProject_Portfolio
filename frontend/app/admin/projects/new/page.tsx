@@ -50,7 +50,6 @@ export default function AddProject() {
             if (res.ok) {
                 message.success("Projet ajouté avec succès !");
             } else {
-                console.error(data);
                 message.error(
                     data.description || "Échec lors de la création du projet"
                 );

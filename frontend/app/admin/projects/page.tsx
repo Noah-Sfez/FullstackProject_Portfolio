@@ -13,7 +13,6 @@ export default function AdminProjectsPage() {
             `${process.env.NEXT_PUBLIC_API_URL}/api/projects`
         );
         const text = await res.text();
-        console.log("Réponse brute :", text);
         try {
             const data = JSON.parse(text);
             setProjects(data["hydra:member"] || data);
@@ -65,7 +64,7 @@ export default function AdminProjectsPage() {
             title: "Title",
             render: (record: Project) => (
                 <Link
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/projects/${record.id}`}
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/projects/${record.id}`}
                 >
                     {record.title}
                 </Link>

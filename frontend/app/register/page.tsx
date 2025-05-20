@@ -4,7 +4,7 @@ import Head from "next/head";
 import { Form, Input, Button, message } from "antd";
 import { useState, useId, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function SimpleRegisterPage() {
     /* --------------------------- State & refs --------------------------- */

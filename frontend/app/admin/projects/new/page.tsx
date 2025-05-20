@@ -14,6 +14,7 @@ import {
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { getToken } from "@/utils/jwt";
+import { Project } from "@/model/Project";
 
 const { Title } = Typography;
 
@@ -21,7 +22,7 @@ export default function AddProject() {
     const [loading, setLoading] = useState(false);
     const [imageUrls, setImageUrls] = useState<string[]>([]);
 
-    const handleSubmit = async (values: any) => {
+    const handleSubmit = async (values: Project) => {
         setLoading(true);
 
         try {

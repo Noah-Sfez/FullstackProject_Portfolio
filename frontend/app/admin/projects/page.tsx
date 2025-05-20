@@ -24,7 +24,7 @@ export default function AdminProjectsPage() {
         fetchProjects();
     }, []);
 
-    const togglePublish = async (id: string, published: boolean) => {
+    const togglePublish = async (id: number, published: boolean) => {
         const res = await fetch(`/api/admin/projects/${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -39,7 +39,7 @@ export default function AdminProjectsPage() {
         }
     };
 
-    const deleteProject = async (id: string) => {
+    const deleteProject = async (id: number) => {
         const res = await fetch(`/api/admin/projects/${id}`, {
             method: "DELETE",
         });
@@ -74,7 +74,7 @@ export default function AdminProjectsPage() {
         },
         {
             title: "Actions",
-            render: (_: any, record: Project) => (
+            render: (record: Project) => (
                 <Space>
                     <Button
                         onClick={() =>

@@ -100,7 +100,7 @@ export default function AdminProjectsPage() {
     return (
         <>
             <div style={{ marginBottom: 16 }}>
-                <Link href={`${process.env.NEXT_PUBLIC_API_URL}/projects/new`}>
+                <Link href={`/admin/projects/new`}>
                     <Button type="primary">Nouveau projet</Button>
                 </Link>
             </div>

@@ -16,15 +16,19 @@ import { Form, Input, Button, message, Checkbox } from "antd";
 import { useState, useId, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRouter } from "next/router";
+import { createCookie } from "@/utils/jwt";
+
 
 /* ―――― 1. Enregistre le plugin ―――― */
 gsap.registerPlugin(ScrollTrigger);
 
 export default function LoginPage() {
-  /* ------------- State & Refs ------------- */
-  const [loading, setLoading] = useState(false);
-  const titleId = useId();
-  const cardRef = useRef<HTMLDivElement | null>(null);
+    /* ------------- State & Refs ------------- */
+    const [loading, setLoading] = useState(false);
+    const titleId = useId();
+    const cardRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
 
   /* ------------- Animations GSAP ------------- */
   useLayoutEffect(() => {
@@ -90,17 +94,23 @@ export default function LoginPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(values),
             });
+            const data = await res.json();
 
-      if (!res.ok)
-        throw new Error("Identifiants incorrects ou erreur serveur.");
-      message.success("Connexion réussie ! 👋");
-      // TODO : redirige l'utilisateur si besoin (router.push("/admin/projects"))
-    } catch (err: any) {
-      message.error(err.message || "Une erreur est survenue");
-    } finally {
-      setLoading(false);
-    }
-  };
+
+            if (!res.ok)
+                throw new Error("Identifiants incorrects ou erreur serveur.");
+            message.success("Connexion réussie ! 👋");
+            const token = data.token;
+            await createCookie(token); // Crée le cookie avec le token
+            router.push("/login");
+
+            // TODO : redirige l'utilisateur si besoin (router.push("/admin/projects"))
+        } catch (err: any) {
+            message.error(err.message || "Une erreur est survenue");
+        } finally {
+            setLoading(false);
+        }
+    };
 
   /* ------------- Structured Data (SEO) ------------- */
   const schemaOrg = {

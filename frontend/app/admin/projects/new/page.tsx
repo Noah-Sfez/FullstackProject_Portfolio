@@ -7,7 +7,6 @@ import {
     Button,
     message,
     Typography,
-    DatePicker,
     Upload,
     Switch,
     InputNumber,

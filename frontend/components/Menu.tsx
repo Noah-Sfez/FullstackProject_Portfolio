@@ -15,6 +15,7 @@ export default function Menu() {
 
     const fetchSession = async () => {
         const session = await getSession();
+        console.log("Session:", session);
         if (session) {
             setIsLogged(true);
             setIsAdmin(session.roles.includes("ROLE_ADMIN"));

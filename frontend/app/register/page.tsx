@@ -4,9 +4,10 @@ import Head from "next/head";
 import { Form, Input, Button, message } from "antd";
 import { useState, useId, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 
 export default function SimpleRegisterPage() {
+    /* --------------------------- State & refs --------------------------- */
     const [loading, setLoading] = useState(false);
     const titleId = useId();
     const cardRef = useRef<HTMLDivElement | null>(null);
@@ -68,8 +69,9 @@ export default function SimpleRegisterPage() {
             });
             if (!res.ok)
                 throw new Error("Erreur serveur, réessayez plus tard.");
-            message.success("Inscription réussie ! ");
-            router.push("/admin/projects");
+            message.success("Inscription réussie ! 🎉");
+            // TODO : redirection (router.push("/login"))
+            router.push("/login");
         } catch (err: any) {
             message.error(err.message || "Une erreur est survenue");
         } finally {

@@ -83,7 +83,9 @@ export default function LoginPage() {
     const onFinish = async (values: any) => {
         setLoading(true);
         try {
-            const res = await fetch("/login", {
+            const apiUrl =
+                process.env.NEXT_PUBLIC_API_URL || "https://127.0.0.1:8000";
+            const res = await fetch(`${apiUrl}auth`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(values),
@@ -92,7 +94,7 @@ export default function LoginPage() {
             if (!res.ok)
                 throw new Error("Identifiants incorrects ou erreur serveur.");
             message.success("Connexion réussie ! 👋");
-            // TODO : redirige l'utilisateur si besoin (router.push("/dashboard"))
+            // TODO : redirige l'utilisateur si besoin (router.push("/admin/projects"))
         } catch (err: any) {
             message.error(err.message || "Une erreur est survenue");
         } finally {

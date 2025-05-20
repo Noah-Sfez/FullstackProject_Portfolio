@@ -131,7 +131,7 @@ export default function RegisterPage() {
             id={titleId}
             className="mb-8 text-center text-3xl font-extrabold text-indigo-700 md:text-4xl"
           >
-            Formulaire d&rsquo;inscription&nbsp;📚
+            Formulaire de candidature&nbsp;📚
           </h1>
 
           <Form
@@ -168,7 +168,7 @@ export default function RegisterPage() {
                 allowClear
                 autoComplete="name"
                 aria-required="true"
-                className="gsap-field focus:ring-indigo-400"   /* <- classe GSAP */
+                className="focus:ring-indigo-400"   /* <- classe GSAP */
               />
             </Form.Item>
 
@@ -186,7 +186,7 @@ export default function RegisterPage() {
                 allowClear
                 autoComplete="email"
                 aria-required="true"
-                className="gsap-field focus:ring-indigo-400"
+                className="focus:ring-indigo-400"
               />
             </Form.Item>
 
@@ -207,7 +207,7 @@ export default function RegisterPage() {
                 autoComplete="tel"
                 inputMode="tel"
                 aria-required="true"
-                className="gsap-field focus:ring-indigo-400"
+                className="focus:ring-indigo-400"
               />
             </Form.Item>
 
@@ -222,7 +222,7 @@ export default function RegisterPage() {
               ]}
             >
               <DatePicker
-                className="gsap-field w-full focus:ring-indigo-400"
+                className="w-full focus:ring-indigo-400"
                 format="DD/MM/YYYY"
                 inputReadOnly
                 placeholder="JJ/MM/AAAA"
@@ -240,7 +240,7 @@ export default function RegisterPage() {
                 allowClear
                 aria-required="true"
                 optionFilterProp="children"
-                className="gsap-field [&_.ant-select-selector]:focus:ring-indigo-400"
+                className="[&_.ant-select-selector]:focus:ring-indigo-400"
               >
                 <Option value="web">Bachelor Développement Web</Option>
                 <Option value="design">Bachelor Design & Création</Option>
@@ -262,7 +262,7 @@ export default function RegisterPage() {
                 rows={2}
                 placeholder="Je souhaite rejoindre l’école car…"
                 aria-required="true"
-                className="gsap-field focus:ring-indigo-400"
+                className="focus:ring-indigo-400"
               />
             </Form.Item>
 

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "antd": "^5.25.2",
     "gsap": "^3.13.0",
     "jose": "^6.0.11",

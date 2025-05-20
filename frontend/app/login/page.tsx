@@ -83,6 +83,7 @@ export default function LoginPage() {
     }, []);
 
     /* ------------- Handler formulaire ------------- */
+    // ...existing code...
     const onFinish = async (values: any) => {
         setLoading(true);
         try {

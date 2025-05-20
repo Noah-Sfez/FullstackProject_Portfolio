@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CandidateRepository;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,24 +15,31 @@ class Candidate
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: 'read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $surname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $program = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $motivation = null;
 
     public function getId(): ?int

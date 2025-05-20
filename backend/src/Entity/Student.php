@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\StudentRepository;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,18 +16,22 @@ class Student
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: 'read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $surname = null;
 
     /**
      * @var Collection<int, Project>
      */
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'student')]
+    #[Groups(groups: ['read', 'write'])]
     private Collection $projects;
 
     public function __construct()

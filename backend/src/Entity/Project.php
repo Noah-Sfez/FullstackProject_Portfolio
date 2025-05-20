@@ -3,7 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\ProjectRepository;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -14,39 +19,69 @@ use Doctrine\ORM\Mapping as ORM;
     forceEager: false,
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],
+    operations: [
+        new GetCollection(
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Acces refused : you are not allowed to see this project.'
+        ),
+        new Post(
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Acces refused : you are not allowed to create this project.'
+        ),
+        new GetCollection(
+            security: "is_granted('ROLE_ADMIN') or object.owner == user",
+            securityMessage: 'Acces refused : you are not allowed to see this project.'
+        ),
+        new Patch(
+            security: "is_granted('ROLE_ADMIN') or object.owner == user",
+            securityMessage: 'Acces refused : you are not allowed to update this project.'
+        ),
+        new Delete(
+            security: "is_granted('ROLE_ADMIN') or object.owner == user",
+            securityMessage: 'Acces refused : you are not allowed to delete this project.'
+        ),
+    ],
 )]
 class Project
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(groups: 'read')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Groups(groups: ['read', 'write'])]
     private ?int $date = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $techno = null;
 
     /**
      * @var Collection<int, Student>
      */
     #[ORM\ManyToMany(targetEntity: Student::class, inversedBy: 'projects')]
+    #[Groups(groups: ['read', 'write'])]
     private Collection $student;
 
     /**
      * @var Collection<int, Media>
      */
     #[ORM\ManyToMany(targetEntity: Media::class, mappedBy: 'projects')]
+    #[Groups(groups: ['read', 'write'])]
     private Collection $media;
 
     #[ORM\Column]
+    #[Groups(groups: ['read', 'write'])]
     private ?bool $isActive = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(groups: ['read', 'write'])]
     private ?string $link = null;
 
     public function __construct()

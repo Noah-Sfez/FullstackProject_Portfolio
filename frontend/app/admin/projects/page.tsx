@@ -1,13 +1,45 @@
 "use client";
+/* ------------------------------------------------------------------
+   Admin – Liste des projets + Modal « Ajouter un étudiant » 💼🎓
+   ------------------------------------------------------------------
+   • Carte glass avec table des projets
+   • Boutons : nouveau projet + ajouter un étudiant
+   • Clique « Ajouter un étudiant » ➜ ouvre une Modal Ant Design contenant
+     un formulaire (Prénom, Nom, Année, Email)
+   • Animations GSAP conservées (fade-in carte, pulse boutons)
+------------------------------------------------------------------- */
 
-import { useEffect, useState } from "react";
-import { Table, Button, Space, Popconfirm, Tag, message } from "antd";
+import { useEffect, useState, useLayoutEffect, useRef } from "react";
+import {
+    Table,
+    Button,
+    Space,
+    Popconfirm,
+    Tag,
+    message,
+    Modal,
+    Form,
+    Input,
+    InputNumber,
+} from "antd";
 import Link from "next/link";
+import {
+    EyeOutlined,
+    EyeInvisibleOutlined,
+    DeleteOutlined,
+    PlusOutlined,
+} from "@ant-design/icons";
 import { Project } from "@/model/Project";
+import { gsap } from "gsap";
 
 export default function AdminProjectsPage() {
-    const [projects, setProjects] = useState([]);
+    /* ---------------- State ---------------- */
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [studentModalOpen, setStudentModalOpen] = useState(false);
+    const [studentLoading, setStudentLoading] = useState(false);
+    const cardRef = useRef<HTMLDivElement | null>(null);
 
+    /* ---------------- Fetch projects ---------------- */
     const fetchProjects = async () => {
         const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/projects`
@@ -25,6 +57,44 @@ export default function AdminProjectsPage() {
         fetchProjects();
     }, []);
 
+    /* ---------------- Animations ---------------- */
+    useLayoutEffect(() => {
+        const prefersReduced = window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
+        if (prefersReduced) return;
+
+        const ctx = gsap.context(() => {
+            gsap.from(cardRef.current, {
+                opacity: 0,
+                y: 60,
+                duration: 0.8,
+                ease: "power2.out",
+            });
+            gsap.set(".new-btn", { scale: 1 });
+            const tl = gsap
+                .timeline({ paused: true })
+                .to(".new-btn", {
+                    scale: 1.05,
+                    duration: 0.15,
+                    ease: "power1.inOut",
+                })
+                .to(".new-btn", {
+                    scale: 1,
+                    duration: 0.15,
+                    ease: "power1.inOut",
+                });
+            document
+                .querySelectorAll<HTMLButtonElement>(".new-btn")
+                .forEach((btn) => {
+                    btn.addEventListener("mouseenter", () => tl.play());
+                    btn.addEventListener("mouseleave", () => tl.reverse());
+                });
+        }, cardRef);
+        return () => ctx.revert();
+    }, []);
+
+    /* ---------------- API actions ---------------- */
     const togglePublish = async (id: number, isActive: boolean) => {
         const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`,
@@ -34,7 +104,6 @@ export default function AdminProjectsPage() {
                 body: JSON.stringify({ isActive }),
             }
         );
-
         if (res.ok) {
             message.success(`Projet ${isActive ? "publié" : "caché"}`);
             fetchProjects();
@@ -50,7 +119,6 @@ export default function AdminProjectsPage() {
                 method: "DELETE",
             }
         );
-
         if (res.ok) {
             message.success("Projet supprimé");
             fetchProjects();
@@ -59,52 +127,180 @@ export default function AdminProjectsPage() {
         }
     };
 
+    /* ---------------- Student Modal handlers ---------------- */
+    const handleAddStudent = async (values: any) => {
+        setStudentLoading(true);
+        try {
+            const apiUrl =
+                process.env.NEXT_PUBLIC_API_URL || "https://127.0.0.1:8000";
+            const res = await fetch(`${apiUrl}/api/students`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(values),
+            });
+            console.log(res);
+            console.log(values);
+            if (res.ok) {
+                message.success("Étudiant ajouté avec succès !");
+                setStudentModalOpen(false);
+            } else {
+                message.error("Erreur lors de l'ajout de l'étudiant");
+            }
+        } catch (err) {
+            console.error(err);
+            message.error("Erreur inattendue.");
+        } finally {
+            setStudentLoading(false);
+        }
+    };
+
+    /* ---------------- Table columns ---------------- */
     const columns = [
         {
-            title: "Title",
-            render: (record: Project) => (
+            title: "Titre",
+            dataIndex: "title",
+            render: (_: any, record: Project) => (
                 <Link href={`/api/projects/${record.id}`}>{record.title}</Link>
             ),
         },
         {
             title: "Statut",
-            render: (record: Project) =>
+            dataIndex: "isActive",
+            render: (_: any, record: Project) =>
                 record.isActive ? (
-                    <Tag color="green">Visible</Tag>
+                    <Tag color="green" icon={<EyeOutlined />}>
+                        Visible
+                    </Tag>
                 ) : (
-                    <Tag color="red">Caché</Tag>
+                    <Tag color="red" icon={<EyeInvisibleOutlined />}>
+                        Caché
+                    </Tag>
                 ),
         },
         {
             title: "Actions",
-            render: (record: Project) => (
+            key: "actions",
+            render: (_: any, record: Project) => (
                 <Space>
                     <Button
+                        size="small"
                         onClick={() =>
                             togglePublish(record.id, !record.isActive)
+                        }
+                        icon={
+                            record.isActive ? (
+                                <EyeInvisibleOutlined />
+                            ) : (
+                                <EyeOutlined />
+                            )
                         }
                     >
                         {record.isActive ? "Cacher" : "Publier"}
                     </Button>
                     <Popconfirm
                         title="Supprimer définitivement ?"
+                        okText="Oui"
+                        cancelText="Annuler"
                         onConfirm={() => deleteProject(record.id)}
                     >
-                        <Button danger>Supprimer</Button>
+                        <Button danger size="small" icon={<DeleteOutlined />}>
+                            Supprimer
+                        </Button>
                     </Popconfirm>
                 </Space>
             ),
         },
     ];
 
+    /* ---------------- JSX ---------------- */
     return (
-        <>
-            <div style={{ marginBottom: 16 }}>
-                <Link href={`/admin/projects/new`}>
-                    <Button type="primary">Nouveau projet</Button>
-                </Link>
-            </div>
-            <Table rowKey="id" dataSource={projects} columns={columns} />
-        </>
+        <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-blue-100 to-indigo-300 px-4 py-10 overflow-hidden">
+            {/* blobs décoratifs */}
+            <div className="pointer-events-none absolute -top-32 -left-28 h-80 w-80 rounded-full bg-indigo-300 opacity-30 blur-3xl" />
+            <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 translate-x-1/3 translate-y-1/3 rounded-full bg-purple-300 opacity-20 blur-3xl" />
+
+            {/* Carte */}
+            <section
+                ref={cardRef}
+                className="relative w-full max-w-4xl overflow-hidden rounded-3xl bg-white/70 p-6 shadow-2xl backdrop-blur-md md:p-8"
+            >
+                {/* Header */}
+                <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <h1 className="text-2xl font-extrabold text-indigo-700 md:text-3xl">
+                        Projets ⚙️
+                    </h1>
+                    <div className="flex flex-wrap gap-2">
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            className="new-btn flex items-center gap-1"
+                            onClick={() => setStudentModalOpen(true)}
+                        >
+                            Ajouter un étudiant
+                        </Button>
+                        <Link href="/admin/projects/new">
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                className="new-btn flex items-center gap-1"
+                            >
+                                Nouveau projet
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Table */}
+                <Table
+                    rowKey="id"
+                    dataSource={projects}
+                    columns={columns}
+                    pagination={{ pageSize: 8 }}
+                    className="rounded-lg"
+                />
+            </section>
+
+            {/* MODAL – Ajouter un étudiant */}
+            <Modal
+                title="Ajouter un étudiant 👨‍🎓"
+                open={studentModalOpen}
+                onCancel={() => setStudentModalOpen(false)}
+                footer={null}
+                destroyOnHidden
+            >
+                <Form
+                    layout="vertical"
+                    onFinish={handleAddStudent}
+                    className="mt-4"
+                >
+                    <Form.Item
+                        name="name"
+                        label="Prénom"
+                        rules={[
+                            { required: true, message: "Prénom obligatoire" },
+                        ]}
+                    >
+                        <Input placeholder="Jean" />
+                    </Form.Item>
+                    <Form.Item
+                        name="surname"
+                        label="Nom"
+                        rules={[{ required: true, message: "Nom obligatoire" }]}
+                    >
+                        <Input placeholder="Dupont" />
+                    </Form.Item>
+                    <Form.Item className="mb-0">
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            loading={studentLoading}
+                            block
+                        >
+                            Ajouter
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </main>
     );
 }

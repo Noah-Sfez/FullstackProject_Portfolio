@@ -25,18 +25,18 @@ export default function AdminProjectsPage() {
         fetchProjects();
     }, []);
 
-    const togglePublish = async (id: number, published: boolean) => {
+    const togglePublish = async (id: number, isActive: boolean) => {
         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/admin/projects/${id}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`,
             {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ published }),
+                headers: { "Content-Type": "application/merge-patch+json" },
+                body: JSON.stringify({ isActive }),
             }
         );
 
         if (res.ok) {
-            message.success(`Projet ${published ? "publié" : "caché"}`);
+            message.success(`Projet ${isActive ? "publié" : "caché"}`);
             fetchProjects();
         } else {
             message.error("Erreur lors de la mise à jour");
@@ -45,7 +45,7 @@ export default function AdminProjectsPage() {
 
     const deleteProject = async (id: number) => {
         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/admin/projects/${id}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`,
             {
                 method: "DELETE",
             }

@@ -10,7 +10,6 @@ const { Title, Paragraph } = Typography;
 export default function ProjectListPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
-    console.log(projects);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -19,8 +18,7 @@ export default function ProjectListPage() {
                     `${process.env.NEXT_PUBLIC_API_URL}/api/projects`
                 );
                 const data = await res.json();
-                console.log(data);
-                setProjects(data);
+                setProjects(data.filter((p: Project) => p.isActive));
             } catch (err) {
                 console.error("Erreur lors du chargement des projets :", err);
             } finally {
@@ -46,7 +44,7 @@ export default function ProjectListPage() {
                                 cover={
                                     <Image
                                         alt={project.title}
-                                        // src={project.image[0]}
+                                        src={project.media[0]}
                                         style={{
                                             height: 200,
                                             objectFit: "cover",

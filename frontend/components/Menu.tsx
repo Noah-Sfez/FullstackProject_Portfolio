@@ -55,6 +55,7 @@ export default function Menu() {
             label: (
                 <Button
                     type="link"
+                    danger
                     onClick={handleLogout}
                     style={{ padding: 0 }}
                 >

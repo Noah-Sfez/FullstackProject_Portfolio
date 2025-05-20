@@ -57,9 +57,9 @@ export default function ProjectDetailPage() {
                 </a>
             </Paragraph>
 
-            {/* {project.image.length > 0 && (
+            {project.media.length > 0 && (
                 <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                    {project.image.map((imgUrl, index) => (
+                    {project.media.map((imgUrl, index) => (
                         <Image
                             key={index}
                             src={imgUrl}
@@ -68,10 +68,10 @@ export default function ProjectDetailPage() {
                         />
                     ))}
                 </div>
-            )} */}
+            )}
 
             <div style={{ marginTop: "24px" }}>
-                <Link href="/admin/projects">
+                <Link href="/">
                     <Button>Retour à la liste</Button>
                 </Link>
             </div>

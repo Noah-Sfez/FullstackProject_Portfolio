@@ -47,7 +47,7 @@ export default function Menu() {
             label: <Link href="/register">Inscription</Link>,
             key: "register",
         },
-        isAdmin && {
+        isLogged && {
             label: <Link href="/admin/projects">Admin</Link>,
             key: "admin",
         },

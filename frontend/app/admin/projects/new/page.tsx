@@ -18,6 +18,8 @@ import {
     Upload,
     Switch,
     InputNumber,
+    UploadProps,
+    Space,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { getToken } from "@/utils/jwt";
@@ -140,6 +142,50 @@ export default function AddProject() {
         setImageUrls(uploadedFiles);
     };
 
+    const props: UploadProps = {
+        name: "filePath",
+        action: `${process.env.NEXT_PUBLIC_API_URL}/api/media`,
+
+        onChange(info) {
+            if (info.file.status !== "uploading") {
+                console.log("aa", info.file, info.fileList);
+            }
+            if (info.file.status === "done") {
+                message.success(`file uploaded successfully ${info.file.name}`);
+            } else if (info.file.status === "error") {
+                message.error(`file upload failed ${info.file.name}.`);
+            }
+        },
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        if (file) {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            console.log(file);
+
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/media`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${getToken()}`,
+                    // ContentType: "multipart/form-data",
+                },
+                body: formData,
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setImageUrls((prev) => [...prev, data.url]);
+                    message.success("Images uploadées avec succès !");
+                })
+                .catch((err) => {
+                    console.error(err);
+                    message.error("Erreur lors de l'upload des images");
+                });
+        }
+    };
+
     /* ---------------- JSX ---------------- */
     return (
         <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-blue-100 to-indigo-300 px-4 py-10 overflow-hidden">
@@ -238,7 +284,7 @@ export default function AddProject() {
                         />
                     </Form.Item>
 
-                    <div>
+                    <Space>
                         <label className="block font-medium mb-1">
                             Étudiants
                         </label>
@@ -278,21 +324,19 @@ export default function AddProject() {
                         >
                             Ajouter un étudiant
                         </Button>
-                    </div>
+                    </Space>
 
                     <Form.Item label="Images (plusieurs possibles)">
-                        <Upload
-                            name="file"
-                            action={`${process.env.NEXT_PUBLIC_API_URL}/api/upload`}
-                            onChange={handleImageUpload}
-                            multiple
-                            listType="picture"
-                            className="w-full"
-                        >
+                        {/* <Upload {...props}>
                             <Button icon={<UploadOutlined />}>
                                 Uploader des images
                             </Button>
-                        </Upload>
+                        </Upload> */}
+                        <input
+                            type="file"
+                            name="file"
+                            onChange={handleFileChange}
+                        />
                     </Form.Item>
 
                     <Form.Item

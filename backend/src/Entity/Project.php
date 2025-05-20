@@ -84,6 +84,10 @@ class Project
     #[Groups(groups: ['read', 'write'])]
     private ?string $link = null;
 
+    #[ORM\Column(length: 255)]
+    #[Groups(groups: ['read', 'write'])]
+    private ?string $title = null;
+
     public function __construct()
     {
         $this->student = new ArrayCollection();
@@ -202,6 +206,18 @@ class Project
     public function setLink(?string $link): static
     {
         $this->link = $link;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
 
         return $this;
     }

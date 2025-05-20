@@ -79,17 +79,17 @@ export default function LoginPage() {
     return () => ctx.revert();
   }, []);
 
-  /* ------------- Handler formulaire ------------- */
-  const onFinish = async (values: any) => {
-    setLoading(true);
-    try {
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "https://127.0.0.1:8000";
-      const res = await fetch(`${apiUrl}/api/auth`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+    /* ------------- Handler formulaire ------------- */
+    const onFinish = async (values: any) => {
+        setLoading(true);
+        try {
+            const apiUrl =
+                process.env.NEXT_PUBLIC_API_URL || "https://127.0.0.1:8000";
+            const res = await fetch(`${apiUrl}/api/auth`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(values),
+            });
 
       if (!res.ok)
         throw new Error("Identifiants incorrects ou erreur serveur.");

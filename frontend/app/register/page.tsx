@@ -1,12 +1,4 @@
 "use client";
-/* ------------------------------------------------------------------
-   Page d'inscription (Prénom, Nom, Email, Mot de passe) – sans animations
-   individuelles sur les champs. Seules demeurent :
-     • Fade + slide‑up de la carte au chargement
-     • Pulse du bouton « S'inscrire  » au survol
-   ------------------------------------------------------------------
-   ➡️ Dépendances : Tailwind CSS, Ant Design, GSAP (`npm i gsap`)
-*/
 
 import Head from "next/head";
 import { Form, Input, Button, message } from "antd";
@@ -25,10 +17,9 @@ export default function SimpleRegisterPage() {
         const prefersReduced = window.matchMedia(
             "(prefers-reduced-motion: reduce)"
         ).matches;
-        if (prefersReduced) return; // Accessibilité : pas d'animations si l'utilisateur ne veut pas
+        if (prefersReduced) return;
 
         const ctx = gsap.context(() => {
-            /* Carte qui apparaît */
             gsap.from(cardRef.current, {
                 opacity: 0,
                 y: 60,
@@ -36,7 +27,6 @@ export default function SimpleRegisterPage() {
                 ease: "power2.out",
             });
 
-            /* Pulse réversible sur le CTA */
             gsap.set(".cta-btn", { scale: 1 });
             const tl = gsap
                 .timeline({ paused: true })
@@ -60,7 +50,6 @@ export default function SimpleRegisterPage() {
     }, []);
 
     /* --------------------------- Submit handler --------------------------- */
-    // ...existing code...
     const onFinish = async (values: any) => {
         setLoading(true);
         try {
@@ -79,8 +68,7 @@ export default function SimpleRegisterPage() {
             });
             if (!res.ok)
                 throw new Error("Erreur serveur, réessayez plus tard.");
-            message.success("Inscription réussie ! 🎉");
-            // TODO : redirection (router.push("/admin/projects"))
+            message.success("Inscription réussie ! ");
             router.push("/admin/projects");
         } catch (err: any) {
             message.error(err.message || "Une erreur est survenue");
@@ -88,17 +76,15 @@ export default function SimpleRegisterPage() {
             setLoading(false);
         }
     };
-    /* --------------------------- Structured data --------------------------- */
     const schemaOrg = {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        name: "Inscription – École XYZ (simple)",
+        name: "Inscription – École IIM (simple)",
         description:
-            "Formulaire d'inscription simplifié pour rejoindre l'École XYZ.",
+            "Formulaire d'inscription simplifié pour rejoindre l'École IIM.",
         url: "https://ton-domaine.com/register-simple",
     };
 
-    /* --------------------------- JSX --------------------------- */
     return (
         <>
             <Head>

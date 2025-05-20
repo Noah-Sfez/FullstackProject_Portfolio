@@ -66,7 +66,7 @@ export default function SimpleRegisterPage() {
         try {
             const apiUrl =
                 process.env.NEXT_PUBLIC_API_URL || "https://127.0.0.1:8000";
-            const res = await fetch(`${apiUrl}api/users`, {
+            const res = await fetch(`${apiUrl}/api/users`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -88,8 +88,6 @@ export default function SimpleRegisterPage() {
             setLoading(false);
         }
     };
-    // ...existing code...
-
     /* --------------------------- Structured data --------------------------- */
     const schemaOrg = {
         "@context": "https://schema.org",

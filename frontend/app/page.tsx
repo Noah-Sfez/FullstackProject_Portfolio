@@ -34,9 +34,12 @@ export default function ProjectHomePage() {
     const topProjects = useMemo(() => projects.slice(0, 4), [projects]);
 
     /**
-     * Retourne une note aléatoire comprise entre 3 et 5 ★
+     * Retourne une note aléatoire comprise entre 3.5 et 5 ★
      */
-    const getRandomRate = () => Math.floor(Math.random() * 2 + 3); // 3,4 ou 5
+    const getRandomRate = () => {
+        // Génère un nombre entre 0 et 3 inclus, puis multiplie par 0.5 et ajoute 3.5
+        return Math.floor(Math.random() * 4) * 0.5 + 3.5; // 3.5, 4, 4.5, 5
+    };
 
     if (loading)
         return (
@@ -181,7 +184,7 @@ export default function ProjectHomePage() {
                                         <Rate
                                             defaultValue={getRandomRate()}
                                             disabled
-                                            allowHalf={false}
+                                            allowHalf
                                         />
                                     </div>
                                 </Card>

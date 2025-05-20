@@ -322,7 +322,7 @@ export default function AddProject() {
                         className="w-full"
                         optionLabelProp="label"
                     >
-                        {availableStudents.map((student) => (
+                        {/* {availableStudents?.map((student) => (
                             <Select.Option
                                 key={student.id}
                                 value={student.id}
@@ -330,7 +330,7 @@ export default function AddProject() {
                             >
                                 {student.name} {student.surname}
                             </Select.Option>
-                        ))}
+                        ))} */}
                     </Select>
 
                     <Form.Item label="Images (plusieurs possibles)">

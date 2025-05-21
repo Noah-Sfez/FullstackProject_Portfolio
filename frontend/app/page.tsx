@@ -113,31 +113,35 @@ export default function ProjectHomePage() {
                             key={project.id}
                             className="flex justify-center items-center min-h-[400px]"
                         >
-                            <Card
-                                hoverable
-                                className="transition-transform duration-300 hover:scale-105"
-                                style={{ width: 350, maxWidth: "90%" }}
-                                cover={
-                                    <Image
-                                        alt={project.title}
-                                        src={project.media[0]}
-                                        preview={false}
-                                        style={{
-                                            height: 350,
-                                            objectFit: "cover",
-                                        }}
-                                    />
-                                }
-                            >
-                                <Card.Meta
-                                    title={project.title}
-                                    description={
-                                        <Paragraph ellipsis={{ rows: 3 }}>
-                                            {project.description}
-                                        </Paragraph>
+                            <Link href={`/projects/${project.id}`}>
+                                {/* Card projet */}
+
+                                <Card
+                                    hoverable
+                                    className="transition-transform duration-300 hover:scale-105"
+                                    style={{ width: 350, maxWidth: "90%" }}
+                                    cover={
+                                        <Image
+                                            alt={project.title}
+                                            src={project.media[0]}
+                                            preview={false}
+                                            style={{
+                                                height: 350,
+                                                objectFit: "cover",
+                                            }}
+                                        />
                                     }
-                                />
-                            </Card>
+                                >
+                                    <Card.Meta
+                                        title={project.title}
+                                        description={
+                                            <Paragraph ellipsis={{ rows: 3 }}>
+                                                {project.description}
+                                            </Paragraph>
+                                        }
+                                    />
+                                </Card>
+                            </Link>
                         </div>
                     ))}
                 </Carousel>

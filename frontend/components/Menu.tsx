@@ -10,83 +10,83 @@ import { usePathname } from "next/navigation";
 const { Header } = Layout;
 
 export default function Menu() {
-  const [isLogged, setIsLogged] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
+    const [isLogged, setIsLogged] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const router = useRouter();
+    const pathname = usePathname();
 
-  const fetchSession = async () => {
-    const session = await getSession();
-    setIsLogged(!!session);
-    setIsAdmin(session?.roles.includes("ROLE_ADMIN") || false);
-  };
+    const fetchSession = async () => {
+        const session = await getSession();
+        setIsLogged(!!session);
+        setIsAdmin(session?.roles.includes("ROLE_ADMIN") || false);
+    };
 
-  useEffect(() => {
-    fetchSession();
-  }, [pathname]);
+    useEffect(() => {
+        fetchSession();
+    }, [pathname]);
 
-  const handleLogout = async () => {
-    await logout();
-    setIsLogged(false);
-    setIsAdmin(false);
-    router.push("/");
-  };
+    const handleLogout = async () => {
+        await logout();
+        setIsLogged(false);
+        setIsAdmin(false);
+        router.push("/");
+    };
 
-  useEffect(() => {
-    fetchSession();
-  }, []);
+    useEffect(() => {
+        fetchSession();
+    }, []);
 
-  const items = [
-    { label: <Link href="/">Accueil</Link>, key: "home" },
-    {
-      label: <Link href="/candidature">Candidature</Link>,
-      key: "candidature",
-    },
-    !isLogged && {
-      label: <Link href="/login">Connexion</Link>,
-      key: "login",
-    },
-    !isLogged && {
-      label: <Link href="/register">Inscription</Link>,
-      key: "register",
-    },
-    isAdmin && {
-      label: "Admin",
-      key: "admin",
-      children: [
-        {
-          label: <Link href="/admin/projects">Projets</Link>,
-          key: "admin-projects",
+    const items = [
+        { label: <Link href="/">Accueil</Link>, key: "home" },
+        !isAdmin && {
+            label: <Link href="/candidature">Candidature</Link>,
+            key: "candidature",
         },
-        {
-          label: <Link href="/admin/candidates">Candidats</Link>,
-          key: "admin-candidates",
+        !isLogged && {
+            label: <Link href="/login">Connexion</Link>,
+            key: "login",
         },
-        {
-          label: <Link href="/admin/students">Étudiants</Link>,
-          key: "admin-students",
+        !isLogged && {
+            label: <Link href="/register">Inscription</Link>,
+            key: "register",
         },
-      ],
-    },
+        isAdmin && {
+            label: "Admin",
+            key: "admin",
+            children: [
+                {
+                    label: <Link href="/admin/projects">Projets</Link>,
+                    key: "admin-projects",
+                },
+                {
+                    label: <Link href="/admin/candidates">Candidats</Link>,
+                    key: "admin-candidates",
+                },
+                {
+                    label: <Link href="/admin/students">Étudiants</Link>,
+                    key: "admin-students",
+                },
+            ],
+        },
 
-    isLogged && {
-      label: (
-        <Button
-          type="link"
-          danger
-          onClick={handleLogout}
-          style={{ padding: 0 }}
-        >
-          Déconnexion
-        </Button>
-      ),
-      key: "logout",
-    },
-  ].filter(Boolean);
+        isLogged && {
+            label: (
+                <Button
+                    type="link"
+                    danger
+                    onClick={handleLogout}
+                    style={{ padding: 0 }}
+                >
+                    Déconnexion
+                </Button>
+            ),
+            key: "logout",
+        },
+    ].filter(Boolean);
 
-  return (
-    <Header style={{ backgroundColor: "#fff", padding: "0 24px" }}>
-      <AntMenu mode="horizontal" items={items} />
-    </Header>
-  );
+    return (
+        <Header style={{ backgroundColor: "#fff", padding: "0 24px" }}>
+            <AntMenu mode="horizontal" items={items} />
+        </Header>
+    );
 }

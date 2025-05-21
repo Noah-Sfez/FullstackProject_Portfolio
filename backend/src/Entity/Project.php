@@ -80,7 +80,7 @@ class Project
     #[Groups(groups: ['read', 'write'])]
     private ?bool $isActive = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(groups: ['read', 'write'])]
     private ?string $link = null;
 

@@ -28,106 +28,12 @@ export default function AdminProjectsPage() {
 
   const cardRef = useRef<HTMLDivElement | null>(null);
 
-<<<<<<< Updated upstream
-    /* ---------------- Fetch projects ---------------- */
-    const fetchProjects = async () => {
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/students`
-        );
-        try {
-            const data = await res.json();
-            const parsed = data["hydra:member"] || data.member || data;
-            setCandidates(Array.isArray(parsed) ? parsed : []);
-        } catch (error) {
-            console.error("Erreur de parsing JSON :", error);
-        }
-    };
-
-    const handleAddStudent = async (values: any) => {
-        setStudentLoading(true);
-        try {
-            const apiUrl =
-                process.env.NEXT_PUBLIC_API_URL || "https://127.0.0.1:8000";
-            const payload = {
-                ...values,
-                projects: [],
-            };
-            const res = await fetch(`${apiUrl}/api/students`, {
-                method: "POST",
-                headers: { "Content-Type": "application/ld+json" },
-                body: JSON.stringify(payload),
-            });
-            if (res.ok) {
-                message.success("Étudiant ajouté avec succès !");
-                setStudentModalOpen(false);
-            } else {
-                const errorData = await res.json();
-                console.error(errorData);
-                message.error("Erreur lors de l'ajout de l'étudiant");
-            }
-        } catch (err) {
-            console.error(err);
-            message.error("Erreur inattendue.");
-        } finally {
-            setStudentLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchProjects();
-    }, []);
-
-    useEffect(() => {
-        fetchProjects();
-    }, [studentModalOpen]);
-
-    /* ---------------- Animations ---------------- */
-    useLayoutEffect(() => {
-        const prefersReduced = window.matchMedia(
-            "(prefers-reduced-motion: reduce)"
-        ).matches;
-        if (prefersReduced) return;
-
-        const ctx = gsap.context(() => {
-            gsap.from(cardRef.current, {
-                opacity: 0,
-                y: 60,
-                duration: 0.8,
-                ease: "power2.out",
-            });
-            gsap.set(".new-btn", { scale: 1 });
-            const tl = gsap
-                .timeline({ paused: true })
-                .to(".new-btn", {
-                    scale: 1.05,
-                    duration: 0.15,
-                    ease: "power1.inOut",
-                })
-                .to(".new-btn", {
-                    scale: 1,
-                    duration: 0.15,
-                    ease: "power1.inOut",
-                });
-            document
-                .querySelectorAll<HTMLButtonElement>(".new-btn")
-                .forEach((btn) => {
-                    btn.addEventListener("mouseenter", () => tl.play());
-                    btn.addEventListener("mouseleave", () => tl.reverse());
-                });
-        }, cardRef);
-        return () => ctx.revert();
-    }, []);
-
-    /* ---------------- Table columns ---------------- */
-    const columns = [
-=======
   /* ---------------- Fetch projects ---------------- */
   const fetchProjects = async () => {
     try {
       const token = await getToken();
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/students`,
->>>>>>> Stashed changes
         {
           headers: {
             Authorization: `Bearer ${token}`,

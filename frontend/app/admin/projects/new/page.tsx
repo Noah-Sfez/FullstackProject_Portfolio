@@ -173,7 +173,7 @@ export default function AddProject() {
     };
 
     return (
-        <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-blue-100 to-indigo-300 px-4 py-10 overflow-hidden">
+        <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-orange-100 to-indigo-300 px-4 py-10 overflow-hidden">
             {/* Carte centrée */}
             <section
                 ref={cardRef}

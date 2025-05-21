@@ -35,14 +35,14 @@ export default function ProjectHomePage() {
     }, []);
 
     // Sélectionne les 4 premiers projets comme "top" pour l'exemple
-    const topProjects = useMemo(() => projects.slice(0, 4), [projects]);
+    const topProjects = useMemo(() => projects.slice(0, 3), [projects]);
 
     /**
-     * Retourne une note aléatoire comprise entre 3.5 et 5 ★
+     * Retourne une note aléatoire : 4, 4.5 ou 5 ★
      */
     const getRandomRate = () => {
-        // Génère un nombre entre 0 et 3 inclus, puis multiplie par 0.5 et ajoute 3.5
-        return Math.floor(Math.random() * 4) * 0.5 + 3.5; // 3.5, 4, 4.5, 5
+        const rates = [4, 4.5, 5];
+        return rates[Math.floor(Math.random() * rates.length)];
     };
 
     if (loading)
@@ -54,7 +54,7 @@ export default function ProjectHomePage() {
         );
 
     return (
-        <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-indigo-200/50 via-blue-100 to-indigo-300 text-white">
+        <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-indigo-200/50 via-orange-100 to-indigo-300 text-white">
             {/* Vidéo de fond */}
             <div className="relative h-[100vh] w-full overflow-hidden">
                 <video

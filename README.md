@@ -26,7 +26,25 @@ Ce projet est un portfolio destiné à l'IIM, permettant de présenter les réal
 ```bash
 git clone https://github.com/Noah-Sfez/FullstackProject_Portfolio.git
 cd fullstackproject_portfolio
+
+# Front
+
+npm install
+npm run dev
+
+# Back
+
+composer install
+php bin/console doctrine:migrations:migrate
+symfony serve
 ```
+
+## Base de données et accès administrateur
+
+Une base de données exportée est disponible dans le projet. Pour se connecter à l'interface d'administration:
+
+- Email : admin@example.com
+- Mot de passe : admin
 
 ## Contribution
 

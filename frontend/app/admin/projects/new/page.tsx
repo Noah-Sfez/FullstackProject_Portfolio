@@ -1,7 +1,7 @@
 "use client";
 /* ------------------------------------------------------------------
    Page « Ajout d’un projet » revisitée 🎨✨
-   Supporte désormais plusieurs images avec aperçu
+   Supporte plusieurs images avec aperçu et limitation de taille
 ------------------------------------------------------------------- */
 
 import { useState, useLayoutEffect, useRef, useEffect } from "react";
@@ -20,9 +20,10 @@ import {
 import { PlusOutlined } from "@ant-design/icons";
 import { getToken } from "@/utils/jwt";
 import { gsap } from "gsap";
-import { useRouter } from "next/navigation";
 
 const { Title } = Typography;
+// Taille max par fichier (en Mo)
+const MAX_FILE_SIZE_MB = 2;
 
 export default function AddProject() {
     const [loading, setLoading] = useState(false);
@@ -32,7 +33,6 @@ export default function AddProject() {
         { id: string; name: string; surname: string }[]
     >([]);
     const cardRef = useRef<HTMLDivElement | null>(null);
-    const router = useRouter();
 
     // Animation d'entrée
     useLayoutEffect(() => {
@@ -40,7 +40,6 @@ export default function AddProject() {
             "(prefers-reduced-motion: reduce)"
         ).matches;
         if (prefersReduced) return;
-
         const ctx = gsap.context(() => {
             gsap.from(cardRef.current, {
                 opacity: 0,
@@ -70,12 +69,22 @@ export default function AddProject() {
         return `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}${path}`;
     };
 
-    // Props pour Upload Antd (multi-images)
+    // Props pour Upload Antd (multi-images) avec limitation de taille
     const uploadProps = {
         name: "file",
         listType: "picture-card" as const,
         multiple: true,
         fileList,
+        // Vérification avant upload
+        beforeUpload: (file: File) => {
+            const isValidSize = file.size / 1024 / 1024 < MAX_FILE_SIZE_MB;
+            if (!isValidSize) {
+                message.error(
+                    `Chaque fichier doit être inférieur à ${MAX_FILE_SIZE_MB} Mo`
+                );
+            }
+            return isValidSize || Upload.LIST_IGNORE;
+        },
         customRequest: async (options: any) => {
             const { file, onSuccess, onError } = options;
             const formData = new FormData();
@@ -119,7 +128,6 @@ export default function AddProject() {
             setFileList(info.fileList);
         },
         onRemove: (file: UploadFile) => {
-            // Met à jour les IRIs si on supprime une image
             if (file.response?.media?.id) {
                 const iri = `/api/media/${file.response.media.id}`;
                 setImageIris((prev) => prev.filter((i) => i !== iri));
@@ -168,7 +176,6 @@ export default function AddProject() {
             message.error("Erreur inattendue.");
         } finally {
             setLoading(false);
-            router.push("/admin/projects");
         }
     };
 

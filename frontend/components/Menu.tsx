@@ -5,6 +5,7 @@ import { Layout, Menu as AntMenu, Button } from "antd";
 import Link from "next/link";
 import { getSession, logout } from "@/utils/jwt";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const { Header } = Layout;
 
@@ -12,15 +13,17 @@ export default function Menu() {
     const [isLogged, setIsLogged] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
 
     const fetchSession = async () => {
         const session = await getSession();
-        console.log("Session:", session);
-        if (session) {
-            setIsLogged(true);
-            setIsAdmin(session.roles.includes("ROLE_ADMIN"));
-        }
+        setIsLogged(!!session);
+        setIsAdmin(session?.roles.includes("ROLE_ADMIN") || false);
     };
+
+    useEffect(() => {
+        fetchSession();
+    }, [pathname]);
 
     const handleLogout = async () => {
         await logout();
@@ -47,8 +50,7 @@ export default function Menu() {
             label: <Link href="/register">Inscription</Link>,
             key: "register",
         },
-        // isAdmin &&
-        {
+        isAdmin && {
             label: <Link href="/admin/projects">Admin</Link>,
             key: "admin",
         },

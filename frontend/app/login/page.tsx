@@ -80,7 +80,6 @@ export default function LoginPage() {
                 throw new Error("Identifiants incorrects ou erreur serveur.");
             message.success("Connexion réussie ! 👋");
             const token = data.token;
-            console.log("Token:", token);
             await createCookie(token);
             router.push("/");
 

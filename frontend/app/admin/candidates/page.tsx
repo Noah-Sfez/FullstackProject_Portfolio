@@ -18,7 +18,6 @@ export default function AdminProjectsPage() {
         );
         try {
             const data = await res.json();
-            console.log("Réponse API projets admin :", data);
             const parsed = data["hydra:member"] || data.member || data;
             setCandidates(Array.isArray(parsed) ? parsed : []);
         } catch (error) {

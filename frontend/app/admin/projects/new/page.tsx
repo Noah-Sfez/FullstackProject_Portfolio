@@ -142,7 +142,6 @@ export default function AddProject() {
                 link: values.link,
                 media: imageIris,
             };
-            console.log("Payload envoyé :", body);
 
             const res = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/projects`,

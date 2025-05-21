@@ -1,8 +1,4 @@
 "use client";
-/* ------------------------------------------------------------------
-   Page « Ajout d’un projet » revisitée 🎨✨
-   Supporte plusieurs images avec aperçu et limitation de taille
-------------------------------------------------------------------- */
 
 import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import {
@@ -23,7 +19,6 @@ import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 
 const { Title } = Typography;
-// Taille max par fichier (en Mo)
 const MAX_FILE_SIZE_MB = 2;
 
 export default function AddProject() {
@@ -36,7 +31,6 @@ export default function AddProject() {
     const cardRef = useRef<HTMLDivElement | null>(null);
     const router = useRouter();
 
-    // Animation d'entrée
     useLayoutEffect(() => {
         const prefersReduced = window.matchMedia(
             "(prefers-reduced-motion: reduce)"
@@ -53,7 +47,6 @@ export default function AddProject() {
         return () => ctx.revert();
     }, []);
 
-    // Chargement des étudiants
     useEffect(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/students`)
             .then((res) => res.json())
@@ -65,19 +58,16 @@ export default function AddProject() {
             .catch(() => setAvailableStudents([]));
     }, []);
 
-    // Utilitaire pour construire une URL absolue
     const getFullUrl = (path: string) => {
         if (/^https?:\/\//.test(path)) return path;
         return `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}${path}`;
     };
 
-    // Props pour Upload Antd (multi-images) avec limitation de taille
     const uploadProps = {
         name: "file",
         listType: "picture-card" as const,
         multiple: true,
         fileList,
-        // Vérification avant upload
         beforeUpload: (file: File) => {
             const isValidSize = file.size / 1024 / 1024 < MAX_FILE_SIZE_MB;
             if (!isValidSize) {
@@ -105,7 +95,6 @@ export default function AddProject() {
                 if (res.ok && data.media?.id) {
                     const iri = `/api/media/${data.media.id}`;
                     const url = getFullUrl(data.media.contentUrl);
-                    // Ajoute le nouveau fichier au fileList
                     setFileList((prev) => [
                         ...prev,
                         Object.assign(file, {
@@ -137,7 +126,6 @@ export default function AddProject() {
         },
     };
 
-    // Soumission du formulaire
     const handleSubmit = async (values: any) => {
         setLoading(true);
         try {
@@ -184,7 +172,6 @@ export default function AddProject() {
 
     return (
         <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-orange-100 to-indigo-300 px-4 py-10 overflow-hidden">
-            {/* Carte centrée */}
             <section
                 ref={cardRef}
                 className="relative w-full max-w-xl overflow-hidden rounded-3xl bg-white/70 p-6 shadow-2xl backdrop-blur-md md:p-8"

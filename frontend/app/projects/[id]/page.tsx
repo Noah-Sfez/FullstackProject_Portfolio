@@ -22,7 +22,6 @@ export default function ProjectDetailPage() {
     const [loading, setLoading] = useState(true);
     const cardRef = useRef<HTMLDivElement>(null);
 
-    // Anim d'apparition GSAP
     useEffect(() => {
         if (cardRef.current) {
             gsap.fromTo(
@@ -33,7 +32,6 @@ export default function ProjectDetailPage() {
         }
     }, [project]);
 
-    // Récupère le projet
     useEffect(() => {
         const fetchProject = async () => {
             try {
@@ -51,7 +49,6 @@ export default function ProjectDetailPage() {
         if (id) fetchProject();
     }, [id]);
 
-    // Microdata pour le SEO (schema.org)
     const schemaOrg = project
         ? {
               "@context": "https://schema.org",
@@ -75,7 +72,6 @@ export default function ProjectDetailPage() {
           }
         : null;
 
-    // Chargement
     if (loading)
         return (
             <main
@@ -141,7 +137,6 @@ export default function ProjectDetailPage() {
                 tabIndex={-1}
                 id="main-content"
             >
-                {/* Blobs décoratifs */}
                 <div
                     aria-hidden="true"
                     className="pointer-events-none absolute -top-24 -left-20 h-96 w-96 bg-indigo-200 opacity-30 rounded-full blur-3xl animate-pulse"
@@ -208,7 +203,6 @@ export default function ProjectDetailPage() {
                         )}
                     </div>
 
-                    {/* Lien externe */}
                     {project.link && (
                         <Paragraph>
                             <Text strong>Lien externe :</Text>{" "}
@@ -224,7 +218,6 @@ export default function ProjectDetailPage() {
                         </Paragraph>
                     )}
 
-                    {/* Images / Médias */}
                     {project.media?.length > 0 && (
                         <section
                             aria-labelledby="images-title"
@@ -274,7 +267,6 @@ export default function ProjectDetailPage() {
                         </section>
                     )}
 
-                    {/* Liste des étudiants */}
                     {project.student &&
                         Array.isArray(project.student) &&
                         project.student.length > 0 && (
@@ -308,7 +300,6 @@ export default function ProjectDetailPage() {
                             </section>
                         )}
 
-                    {/* CTA retour */}
                     <nav className="flex justify-end mt-6" aria-label="Retour">
                         <Link href="/" legacyBehavior>
                             <a

@@ -24,13 +24,11 @@ import { Project } from "@/model/Project";
 import { gsap } from "gsap";
 
 export default function AdminProjectsPage() {
-  /* ---------------- State ---------------- */
   const [projects, setProjects] = useState<Project[]>([]);
   const [studentModalOpen, setStudentModalOpen] = useState(false);
   const [studentLoading, setStudentLoading] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
-  /* ---------------- Fetch projects ---------------- */
   const fetchProjects = async () => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`);
     try {
@@ -47,7 +45,6 @@ export default function AdminProjectsPage() {
     fetchProjects();
   }, []);
 
-  /* ---------------- Animations ---------------- */
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -84,7 +81,6 @@ export default function AdminProjectsPage() {
     return () => ctx.revert();
   }, []);
 
-  /* ---------------- API actions ---------------- */
   const togglePublish = async (id: number, isActive: boolean) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`,
@@ -117,13 +113,11 @@ export default function AdminProjectsPage() {
     }
   };
 
-  /* ---------------- Student Modal handlers ---------------- */
   const handleAddStudent = async (values: any) => {
     setStudentLoading(true);
     try {
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL || "https://127.0.0.1:8000";
-      // Ajoute le champ projects comme attendu par l'API
       const payload = {
         ...values,
         projects: [],
@@ -151,7 +145,6 @@ export default function AdminProjectsPage() {
     }
   };
 
-  /* ---------------- Table columns ---------------- */
   const columns = [
     {
       title: "Titre",
@@ -201,19 +194,16 @@ export default function AdminProjectsPage() {
     },
   ];
 
-  /* ---------------- JSX ---------------- */
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-orange-100 to-indigo-300 px-4 py-10 overflow-hidden">
-      {/* blobs décoratifs */}
+
       <div className="pointer-events-none absolute -top-32 -left-28 h-80 w-80 rounded-full bg-indigo-300 opacity-30 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 translate-x-1/3 translate-y-1/3 rounded-full bg-purple-300 opacity-20 blur-3xl" />
 
-      {/* Carte */}
       <section
         ref={cardRef}
         className="relative w-full max-w-4xl overflow-hidden rounded-3xl bg-white/70 p-6 shadow-2xl backdrop-blur-md md:p-8"
       >
-        {/* Header */}
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h1 className="text-2xl font-extrabold text-indigo-700 md:text-3xl">
             Projets ⚙️
@@ -239,7 +229,6 @@ export default function AdminProjectsPage() {
           </div>
         </div>
 
-        {/* Table */}
         <Table
           rowKey="id"
           dataSource={projects}
@@ -249,7 +238,6 @@ export default function AdminProjectsPage() {
         />
       </section>
 
-      {/* MODAL – Ajouter un étudiant */}
       <Modal
         title="Ajouter un étudiant 👨‍🎓"
         open={studentModalOpen}

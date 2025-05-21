@@ -1,32 +1,26 @@
 "use client";
-/* Page Inscription animée avec GSAP ✨ */
 import Head from "next/head";
 import { Form, Input, DatePicker, Select, Button, message } from "antd";
 import { useState, useId, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger); // <-- ①
+gsap.registerPlugin(ScrollTrigger);
 
 const { Option } = Select;
 
 export default function RegisterPage() {
-    /* ----------- State / refs ----------- */
     const [loading, setLoading] = useState(false);
     const titleId = useId();
-    const cardRef = useRef<HTMLDivElement | null>(null); // carte
-    /* pas besoin de tableau de refs : on ciblera par classe */
+    const cardRef = useRef<HTMLDivElement | null>(null);
 
-    /* ----------- GSAP animations ----------- */
     useLayoutEffect(() => {
         const prefersReduced = window.matchMedia(
             "(prefers-reduced-motion: reduce)"
         ).matches;
-        if (prefersReduced) return; // accessibilité : on skip si l'user le demande
+        if (prefersReduced) return;
 
-        /* gsap.context limite la recherche des sélecteurs à cardRef */
         const ctx = gsap.context(() => {
-            /* 1) Carte qui arrive */
             gsap.from(cardRef.current, {
                 opacity: 0,
                 y: 60,
@@ -34,7 +28,6 @@ export default function RegisterPage() {
                 ease: "power2.out",
             });
 
-            /* 2) Stagger des champs */
             gsap.from(".gsap-field", {
                 opacity: 0,
                 x: -40,
@@ -47,7 +40,6 @@ export default function RegisterPage() {
                 },
             });
 
-            /* 3) Pulse du bouton (timeline reversible) */
             gsap.set(".cta-btn", { scale: 1 });
             const tl = gsap
                 .timeline({ paused: true })
@@ -65,13 +57,11 @@ export default function RegisterPage() {
             const btn = document.querySelector<HTMLButtonElement>(".cta-btn");
             btn?.addEventListener("mouseenter", () => tl.play());
             btn?.addEventListener("mouseleave", () => tl.reverse());
-        }, cardRef); // <- scope
+        }, cardRef);
 
-        /* Cleanup */
         return () => ctx.revert();
     }, []);
 
-    /* ----------- Submit handler ----------- */
     const onFinish = async (values: any) => {
         setLoading(true);
         try {
@@ -92,7 +82,6 @@ export default function RegisterPage() {
         }
     };
 
-    /* ----------- Structured Data ----------- */
     const schemaOrg = {
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -101,10 +90,8 @@ export default function RegisterPage() {
         url: "https://ton-domaine.com/register",
     };
 
-    /* ----------- JSX ----------- */
     return (
         <>
-            {/* SEO */}
             <Head>
                 <title>Inscription | École IIM</title>
                 <meta
@@ -112,7 +99,7 @@ export default function RegisterPage() {
                     content="Formulaire d'inscription à l'École IIM pour intégrer nos programmes."
                 />
                 <link rel="canonical" href="https://ton-domaine.com/register" />
-                {/* Open Graph */}
+
                 <meta property="og:type" content="website" />
                 <meta property="og:title" content="Inscription – École IIM" />
                 <meta
@@ -131,13 +118,11 @@ export default function RegisterPage() {
                 aria-labelledby={titleId}
                 className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-orange-100 to-indigo-300 px-4 py-10 overflow-hidden"
             >
-                {/* blobs décoratifs */}
                 <div className="pointer-events-none absolute -top-32 -left-28 h-80 w-80 rounded-full bg-indigo-300 opacity-30 blur-3xl" />
                 <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 translate-x-1/3 translate-y-1/3 rounded-full bg-purple-300 opacity-20 blur-3xl" />
 
-                {/* carte en verre */}
                 <section
-                    ref={cardRef} /* <- ref pour GSAP */
+                    ref={cardRef}
                     className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white/70 p-6 shadow-2xl backdrop-blur-md md:p-8"
                 >
                     <h1
@@ -156,7 +141,6 @@ export default function RegisterPage() {
                         aria-describedby="form-instructions"
                         className="grid gap-5"
                     >
-                        {/* honeypot */}
                         <input
                             type="checkbox"
                             tabIndex={-1}
@@ -168,7 +152,6 @@ export default function RegisterPage() {
                             Tous les champs marqués obligatoire doivent être
                             remplis.
                         </p>
-                        {/* ——— Champs ——— */}
                         <Form.Item
                             label="Prénom"
                             name="surname"
@@ -297,7 +280,6 @@ export default function RegisterPage() {
                                 className="focus:ring-indigo-400"
                             />
                         </Form.Item>
-                        {/* ——— Bouton ——— */}
                         <Form.Item shouldUpdate>
                             {() => (
                                 <Button

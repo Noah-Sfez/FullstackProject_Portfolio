@@ -9,11 +9,9 @@ import { gsap } from "gsap";
 import { Candidat } from "@/model/Candidat";
 
 export default function AdminProjectsPage() {
-    /* ---------------- State ---------------- */
     const [candidates, setCandidates] = useState<Project[]>([]);
     const cardRef = useRef<HTMLDivElement | null>(null);
 
-    /* ---------------- Fetch projects ---------------- */
     const fetchProjects = async () => {
         const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/candidates`
@@ -32,7 +30,6 @@ export default function AdminProjectsPage() {
         fetchProjects();
     }, []);
 
-    /* ---------------- Animations ---------------- */
     useLayoutEffect(() => {
         const prefersReduced = window.matchMedia(
             "(prefers-reduced-motion: reduce)"
@@ -69,7 +66,6 @@ export default function AdminProjectsPage() {
         return () => ctx.revert();
     }, []);
 
-    /* ---------------- Table columns ---------------- */
     const columns = [
         {
             title: "Nom",
@@ -89,7 +85,6 @@ export default function AdminProjectsPage() {
         },
     ];
 
-    /* ---------------- JSX ---------------- */
     return (
         <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-orange-100 to-indigo-300 px-4 py-10 overflow-hidden">
             <div className="pointer-events-none absolute -top-32 -left-28 h-80 w-80 rounded-full bg-indigo-300 opacity-30 blur-3xl" />
@@ -99,14 +94,12 @@ export default function AdminProjectsPage() {
                 ref={cardRef}
                 className="relative w-full max-w-4xl overflow-hidden rounded-3xl bg-white/70 p-6 shadow-2xl backdrop-blur-md md:p-8"
             >
-                {/* Header */}
                 <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <h1 className="text-2xl font-extrabold text-indigo-700 md:text-3xl">
                         Candidats ⚙️
                     </h1>
                 </div>
 
-                {/* Table */}
                 <Table
                     rowKey="id"
                     dataSource={candidates}

@@ -7,13 +7,11 @@ import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 
 export default function SimpleRegisterPage() {
-    /* --------------------------- State & refs --------------------------- */
     const [loading, setLoading] = useState(false);
     const titleId = useId();
     const cardRef = useRef<HTMLDivElement | null>(null);
     const router = useRouter();
 
-    /* --------------------------- Animations (GSAP) --------------------------- */
     useLayoutEffect(() => {
         const prefersReduced = window.matchMedia(
             "(prefers-reduced-motion: reduce)"
@@ -50,7 +48,6 @@ export default function SimpleRegisterPage() {
         return () => ctx.revert();
     }, []);
 
-    /* --------------------------- Submit handler --------------------------- */
     const onFinish = async (values: any) => {
         setLoading(true);
         try {
@@ -69,8 +66,7 @@ export default function SimpleRegisterPage() {
             });
             if (!res.ok)
                 throw new Error("Erreur serveur, réessayez plus tard.");
-            message.success("Inscription réussie ! 🎉");
-            // TODO : redirection (router.push("/login"))
+            message.success("Inscription réussie !");
             router.push("/login");
         } catch (err: any) {
             message.error(err.message || "Une erreur est survenue");
@@ -81,7 +77,7 @@ export default function SimpleRegisterPage() {
     const schemaOrg = {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        name: "Inscription – École IIM (simple)",
+        name: "Inscription – École IIM",
         description:
             "Formulaire d'inscription simplifié pour rejoindre l'École IIM.",
         url: "https://ton-domaine.com/register-simple",
@@ -118,11 +114,9 @@ export default function SimpleRegisterPage() {
                 aria-labelledby={titleId}
                 className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-orange-100 to-indigo-300 px-4 py-10 overflow-hidden"
             >
-                {/* blobs décoratifs */}
                 <div className="pointer-events-none absolute -top-32 -left-28 h-80 w-80 rounded-full bg-indigo-300 opacity-30 blur-3xl" />
                 <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 translate-x-1/3 translate-y-1/3 rounded-full bg-purple-300 opacity-20 blur-3xl" />
 
-                {/* Carte glass */}
                 <section
                     ref={cardRef}
                     className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white/70 p-6 shadow-2xl backdrop-blur-md md:p-8"
@@ -147,7 +141,6 @@ export default function SimpleRegisterPage() {
                             Tous les champs sont obligatoires.
                         </p>
 
-                        {/* Prénom */}
                         <Form.Item
                             label="Prénom"
                             name="firstName"
@@ -167,7 +160,6 @@ export default function SimpleRegisterPage() {
                             />
                         </Form.Item>
 
-                        {/* Nom */}
                         <Form.Item
                             label="Nom"
                             name="lastName"
@@ -187,7 +179,6 @@ export default function SimpleRegisterPage() {
                             />
                         </Form.Item>
 
-                        {/* Email */}
                         <Form.Item
                             label="Adresse e-mail"
                             name="email"
@@ -212,7 +203,6 @@ export default function SimpleRegisterPage() {
                             />
                         </Form.Item>
 
-                        {/* Mot de passe */}
                         <Form.Item
                             label="Mot de passe"
                             name="password"
@@ -231,7 +221,6 @@ export default function SimpleRegisterPage() {
                             />
                         </Form.Item>
 
-                        {/* Bouton CTA */}
                         <Form.Item shouldUpdate>
                             {() => (
                                 <Button

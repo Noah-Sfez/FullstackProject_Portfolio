@@ -22,7 +22,6 @@ export default function ProjectHomePage() {
                 const rawProjects = Array.isArray(data.member)
                     ? data.member
                     : [];
-                console.log("Réponse API :", data); // 👈 VOIR la structure
                 setProjects(rawProjects.filter((p: Project) => p.isActive));
             } catch (err) {
                 console.error("Erreur lors du chargement des projets :", err);
@@ -34,12 +33,8 @@ export default function ProjectHomePage() {
         fetchProjects();
     }, []);
 
-    // Sélectionne les 4 premiers projets comme "top" pour l'exemple
     const topProjects = useMemo(() => projects.slice(0, 3), [projects]);
 
-    /**
-     * Retourne une note aléatoire : 4, 4.5 ou 5 ★
-     */
     const getRandomRate = () => {
         const rates = [4, 4.5, 5];
         return rates[Math.floor(Math.random() * rates.length)];
@@ -55,7 +50,6 @@ export default function ProjectHomePage() {
 
     return (
         <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-br from-indigo-200/50 via-orange-100 to-indigo-300 text-white">
-            {/* Vidéo de fond */}
             <div className="relative h-[100vh] w-full overflow-hidden">
                 <video
                     className="absolute top-0 left-0 h-full w-full object-cover pointer-events-none"
@@ -65,7 +59,6 @@ export default function ProjectHomePage() {
                     muted
                     playsInline
                 />
-                {/* Titre principal */}
                 <header className="relative flex h-full w-full items-center justify-center bg-black/50 p-4 text-center">
                     <h1 className="drop-shadow-xl md:text-6xl text-4xl font-extrabold">
                         Projets Étudiants IIM
@@ -73,7 +66,6 @@ export default function ProjectHomePage() {
                 </header>
             </div>
 
-            {/* Carrousel des projets */}
             <section className="mx-auto max-w-7xl px-4 py-12">
                 <Title
                     level={2}
@@ -114,7 +106,6 @@ export default function ProjectHomePage() {
                             className="flex justify-center items-center min-h-[400px]"
                         >
                             <Link href={`/projects/${project.id}`}>
-                                {/* Card projet */}
 
                                 <Card
                                     hoverable
@@ -147,7 +138,6 @@ export default function ProjectHomePage() {
                 </Carousel>
             </section>
 
-            {/* Top projets avec notations aléatoires */}
             <section className="mx-auto max-w-7xl px-4 py-12">
                 <Title
                     level={2}

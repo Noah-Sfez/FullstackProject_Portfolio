@@ -33,7 +33,6 @@ export default function Footer() {
             className="w-full px-4 pt-8 pb-4 bg-gradient-to-r from-indigo-100 via-orange-100 to-purple-100 border-t border-indigo-200/40 shadow-inner"
         >
             <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-                {/* Left part */}
                 <div className="flex flex-col items-center md:items-start">
                     <span className="font-extrabold text-indigo-700 text-xl tracking-wider">
                         © {new Date().getFullYear()} Projet IIM
@@ -43,8 +42,6 @@ export default function Footer() {
                         Développement web
                     </span>
                 </div>
-
-                {/* Right part */}
                 <div className="flex gap-5 text-indigo-700 text-2xl">
                     <Link
                         href="https://github.com/Noah-Sfez/FullstackProject_Portfolio"

@@ -1,15 +1,4 @@
 "use client";
-/* Page Connexion animée avec GSAP ✨
-   --------------------------------------------------
-   ➡️ Dépendances :
-      - Tailwind CSS (déjà configuré dans ton projet)
-      - Ant Design
-      - GSAP (`npm i gsap`)
-
-   Cette page reprend la même esthétique "glass-morphism" et les animations
-   (fade-in, stagger, pulse) que la page d'inscription, mais adaptée
-   à une authentification simple (e-mail + mot de passe).
-*/
 
 import Head from "next/head";
 import { Form, Input, Button, message, Checkbox } from "antd";
@@ -19,26 +8,21 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRouter } from "next/navigation";
 import { createCookie } from "@/utils/jwt";
 
-/* ―――― 1. Enregistre le plugin ―――― */
 gsap.registerPlugin(ScrollTrigger);
 
 export default function LoginPage() {
-    /* ------------- State & Refs ------------- */
     const [loading, setLoading] = useState(false);
     const titleId = useId();
     const cardRef = useRef<HTMLDivElement | null>(null);
     const router = useRouter();
 
-    /* ------------- Animations GSAP ------------- */
     useLayoutEffect(() => {
-        // Accessibilité : on respecte prefers-reduced-motion
         const prefersReduced = window.matchMedia(
             "(prefers-reduced-motion: reduce)"
         ).matches;
         if (prefersReduced) return;
 
         const ctx = gsap.context(() => {
-            /* (1) Carte qui apparaît */
             gsap.from(cardRef.current, {
                 opacity: 0,
                 y: 60,
@@ -46,7 +30,6 @@ export default function LoginPage() {
                 ease: "power2.out",
             });
 
-            /* (2) Cascade des champs */
             gsap.from(".gsap-field", {
                 opacity: 0,
                 x: -40,
@@ -59,7 +42,6 @@ export default function LoginPage() {
                 },
             });
 
-            /* (3) Pulse sur le bouton */
             gsap.set(".cta-btn", { scale: 1 });
             const tl = gsap
                 .timeline({ paused: true })
@@ -82,7 +64,6 @@ export default function LoginPage() {
         return () => ctx.revert();
     }, []);
 
-    /* ------------- Handler formulaire ------------- */
     const onFinish = async (values: any) => {
         setLoading(true);
         try {
@@ -100,10 +81,9 @@ export default function LoginPage() {
             message.success("Connexion réussie ! 👋");
             const token = data.token;
             console.log("Token:", token);
-            await createCookie(token); // Crée le cookie avec le token
-            router.push("/"); // Redirige vers la page admin
+            await createCookie(token);
+            router.push("/");
 
-            // TODO : redirige l'utilisateur si besoin (router.push("/admin/projects"))
         } catch (err: any) {
             message.error(err.message || "Une erreur est survenue");
         } finally {
@@ -111,7 +91,6 @@ export default function LoginPage() {
         }
     };
 
-    /* ------------- Structured Data (SEO) ------------- */
     const schemaOrg = {
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -121,10 +100,8 @@ export default function LoginPage() {
         url: "https://ton-domaine.com/login",
     };
 
-    /* ------------- JSX ------------- */
     return (
         <>
-            {/* SEO */}
             <Head>
                 <title>Connexion | École XYZ</title>
                 <meta
@@ -132,12 +109,11 @@ export default function LoginPage() {
                     content="Connectez-vous pour accéder à votre espace étudiant."
                 />
                 <link rel="canonical" href="https://ton-domaine.com/login" />
-                {/* Open Graph */}
                 <meta property="og:type" content="website" />
-                <meta property="og:title" content="Connexion – École XYZ" />
+                <meta property="og:title" content="Connexion – École IIM" />
                 <meta
                     property="og:description"
-                    content="Accédez à votre espace sécurisé à l'École XYZ."
+                    content="Accédez à votre espace sécurisé à l'École IIM."
                 />
                 <script
                     type="application/ld+json"
@@ -147,7 +123,6 @@ export default function LoginPage() {
                 />
             </Head>
 
-            {/* Fond gradient + blobs */}
             <main
                 aria-labelledby={titleId}
                 className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-orange-100 to-indigo-300 px-4 py-10 overflow-hidden"
@@ -155,7 +130,6 @@ export default function LoginPage() {
                 <div className="pointer-events-none absolute -top-32 -left-28 h-80 w-80 rounded-full bg-indigo-300 opacity-30 blur-3xl" />
                 <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 translate-x-1/3 translate-y-1/3 rounded-full bg-purple-300 opacity-20 blur-3xl" />
 
-                {/* Carte « glass » */}
                 <section
                     ref={cardRef}
                     className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white/70 p-6 shadow-2xl backdrop-blur-md md:p-8"
@@ -181,7 +155,6 @@ export default function LoginPage() {
                             connecter.
                         </p>
 
-                        {/* Champ e-mail */}
                         <Form.Item
                             label="Adresse e-mail"
                             name="email"
@@ -206,7 +179,6 @@ export default function LoginPage() {
                             />
                         </Form.Item>
 
-                        {/* Champ mot de passe */}
                         <Form.Item
                             label="Mot de passe"
                             name="password"
@@ -226,18 +198,6 @@ export default function LoginPage() {
                             />
                         </Form.Item>
 
-                        {/* Souviens-toi de moi 
-                        <Form.Item
-                            name="remember"
-                            valuePropName="checked"
-                            className="m-0"
-                        >
-                            <Checkbox className="gsap-field">
-                                Se souvenir de moi
-                            </Checkbox>
-                        </Form.Item>
-                            */}
-                        {/* Bouton */}
                         <Form.Item shouldUpdate>
                             {() => (
                                 <Button

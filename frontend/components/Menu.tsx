@@ -17,8 +17,10 @@ export default function Menu() {
 
     const fetchSession = async () => {
         const session = await getSession();
-        setIsLogged(!!session);
-        setIsAdmin(session?.roles.includes("ROLE_ADMIN") || false);
+        if (session) {
+            setIsLogged(true);
+            setIsAdmin(session.roles.includes("ROLE_ADMIN"));
+        }
     };
 
     useEffect(() => {

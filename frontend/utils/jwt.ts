@@ -36,7 +36,6 @@ export async function logout() {
     const cookie = await cookies();
     // Destroy the session
     cookie.set("token", "", { expires: new Date(0) });
-    cookie.delete("token");
 }
 
 // Read the cookie

@@ -9,3 +9,5 @@
 ###< lexik/jwt-authentication-bundle ###
 
 /public/uploads
+
+/config/jwt

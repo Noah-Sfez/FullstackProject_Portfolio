@@ -82,7 +82,6 @@ export default function LoginPage() {
             const token = data.token;
             await createCookie(token);
             router.push("/");
-
         } catch (err: any) {
             message.error(err.message || "Une erreur est survenue");
         } finally {

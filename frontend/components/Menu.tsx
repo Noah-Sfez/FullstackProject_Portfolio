@@ -51,9 +51,20 @@ export default function Menu() {
             key: "register",
         },
         isAdmin && {
-            label: <Link href="/admin/projects">Admin</Link>,
+            label: "Admin",
             key: "admin",
+            children: [
+                {
+                    label: <Link href="/admin/projects">Projets</Link>,
+                    key: "admin-projects",
+                },
+                {
+                    label: <Link href="/admin/candidates">Candidats</Link>,
+                    key: "admin-candidates",
+                },
+            ],
         },
+
         isLogged && {
             label: (
                 <Button

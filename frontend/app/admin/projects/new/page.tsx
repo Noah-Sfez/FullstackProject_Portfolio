@@ -126,36 +126,16 @@ export default function AddProject() {
             setLoading(false);
         }
     };
-
-    const handleImageUpload = (info: any) => {
-        const uploadedFiles = info.fileList
-            .filter((file: any) => file.status === "done" && file.response?.url)
-            .map((file: any) => file.response.url);
-        setImageUrls(uploadedFiles);
-    };
-
-    const props: UploadProps = {
-        name: "filePath",
-        action: `${process.env.NEXT_PUBLIC_API_URL}/api/media`,
-
-        onChange(info) {
-            if (info.file.status !== "uploading") {
-                console.log("aa", info.file, info.fileList);
-            }
-            if (info.file.status === "done") {
-                message.success(`file uploaded successfully ${info.file.name}`);
-            } else if (info.file.status === "error") {
-                message.error(`file upload failed ${info.file.name}.`);
-            }
-        },
-    };
+    
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files;
         if (file) {
             const formData = new FormData();
-            
-            formData.append("file", file);
+
+            // formData.append("filePath", file[0]);
+
+            formData.append("file", file[0]);
 
             console.log(file);
 

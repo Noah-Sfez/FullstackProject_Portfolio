@@ -19,7 +19,11 @@ export default function ProjectHomePage() {
                     `${process.env.NEXT_PUBLIC_API_URL}/api/projects`
                 );
                 const data = await res.json();
-                setProjects(data.filter((p: Project) => p.isActive));
+                const rawProjects = Array.isArray(data.member)
+                    ? data.member
+                    : [];
+                console.log("Réponse API :", data); // 👈 VOIR la structure
+                setProjects(rawProjects.filter((p: Project) => p.isActive));
             } catch (err) {
                 console.error("Erreur lors du chargement des projets :", err);
             } finally {

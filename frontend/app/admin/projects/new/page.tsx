@@ -1,6 +1,7 @@
 "use client";
 /* ------------------------------------------------------------------
    Page « Ajout d’un projet » revisitée 🎨✨
+   Supporte désormais plusieurs images avec aperçu
 ------------------------------------------------------------------- */
 
 import { useState, useLayoutEffect, useRef, useEffect } from "react";
@@ -13,23 +14,25 @@ import {
     Switch,
     InputNumber,
     Select,
+    Upload,
+    UploadFile,
 } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { getToken } from "@/utils/jwt";
 import { gsap } from "gsap";
 
 const { Title } = Typography;
 
 export default function AddProject() {
-    /* ---------------- State ---------------- */
     const [loading, setLoading] = useState(false);
-    const [imageIris, setImageIris] = useState<string[]>([]); // IRIs envoyés à l'API
-    const [imagePreviews, setImagePreviews] = useState<string[]>([]); // URLs pour affichage
+    const [imageIris, setImageIris] = useState<string[]>([]);
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [availableStudents, setAvailableStudents] = useState<
         { id: string; name: string; surname: string }[]
     >([]);
     const cardRef = useRef<HTMLDivElement | null>(null);
 
-    /* --------------- Animations --------------- */
+    // Animation d'entrée
     useLayoutEffect(() => {
         const prefersReduced = window.matchMedia(
             "(prefers-reduced-motion: reduce)"
@@ -43,27 +46,11 @@ export default function AddProject() {
                 duration: 0.8,
                 ease: "power2.out",
             });
-            gsap.set(".cta-btn", { scale: 1 });
-            const tl = gsap
-                .timeline({ paused: true })
-                .to(".cta-btn", {
-                    scale: 1.05,
-                    duration: 0.15,
-                    ease: "power1.inOut",
-                })
-                .to(".cta-btn", {
-                    scale: 1,
-                    duration: 0.15,
-                    ease: "power1.inOut",
-                });
-            const btn = document.querySelector<HTMLButtonElement>(".cta-btn");
-            btn?.addEventListener("mouseenter", () => tl.play());
-            btn?.addEventListener("mouseleave", () => tl.reverse());
         }, cardRef);
         return () => ctx.revert();
     }, []);
 
-    /* --------------- Fetch Students --------------- */
+    // Chargement des étudiants
     useEffect(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/students`)
             .then((res) => res.json())
@@ -75,69 +62,86 @@ export default function AddProject() {
             .catch(() => setAvailableStudents([]));
     }, []);
 
-    /* --------------- File Upload Handler --------------- */
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
+    // Utilitaire pour construire une URL absolue
+    const getFullUrl = (path: string) => {
+        if (/^https?:\/\//.test(path)) return path;
+        return `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "")}${path}`;
+    };
+
+    // Props pour Upload Antd (multi-images)
+    const uploadProps = {
+        name: "file",
+        listType: "picture-card" as const,
+        multiple: true,
+        fileList,
+        customRequest: async (options: any) => {
+            const { file, onSuccess, onError } = options;
             const formData = new FormData();
             formData.append("file", file);
-
             try {
                 const token = await getToken();
                 const res = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/media`,
                     {
                         method: "POST",
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
+                        headers: { Authorization: `Bearer ${token}` },
                         body: formData,
                     }
                 );
                 const data = await res.json();
-                console.log("Réponse upload image :", data);
-
-                // Correction ici ! On construit l'IRI manuellement :
-                if (res.ok && data.media && data.media.id) {
-                    setImageIris((prev) => [
+                if (res.ok && data.media?.id) {
+                    const iri = `/api/media/${data.media.id}`;
+                    const url = getFullUrl(data.media.contentUrl);
+                    // Ajoute le nouveau fichier au fileList
+                    setFileList((prev) => [
                         ...prev,
-                        `/api/media/${data.media.id}`,
+                        Object.assign(file, {
+                            status: "done",
+                            response: data,
+                            url,
+                        }),
                     ]);
-                    // Si tu as une url d'affichage tu peux la mettre ici, sinon laisse vide
-                    // setImagePreviews((prev) => [...prev, data.media.contentUrl]);
+                    setImageIris((prev) => [...prev, iri]);
+                    onSuccess(data, file);
                     message.success("Image uploadée avec succès !");
                 } else {
-                    message.error(
-                        data.description || "Erreur lors de l'upload de l'image"
-                    );
+                    throw new Error(data.description || "Upload failed");
                 }
-            } catch (err) {
+            } catch (err: any) {
                 console.error(err);
-                message.error("Erreur lors de l'upload de l'image");
+                onError(err);
+                message.error("Échec de l'upload de l'image");
             }
-        }
+        },
+        onChange(info: any) {
+            setFileList(info.fileList);
+        },
+        onRemove: (file: UploadFile) => {
+            // Met à jour les IRIs si on supprime une image
+            if (file.response?.media?.id) {
+                const iri = `/api/media/${file.response.media.id}`;
+                setImageIris((prev) => prev.filter((i) => i !== iri));
+            }
+        },
     };
 
-    /* --------------- Submit Handler --------------- */
+    // Soumission du formulaire
     const handleSubmit = async (values: any) => {
         setLoading(true);
-
         try {
             const token = await getToken();
-
-            // Construction du payload
             const body = {
                 title: values.title,
                 description: values.description,
                 date: values.date,
                 techno: values.techno,
-                student: values.students?.map((id) => `/api/students/${id}`), // CLÉ SINGULIER !
+                student: values.students?.map(
+                    (id: string) => `/api/students/${id}`
+                ),
                 isActive: values.isActive ?? true,
                 link: values.link,
                 media: imageIris,
             };
-
-            // DEBUG PAYLOAD
             console.log("Payload envoyé :", body);
 
             const res = await fetch(
@@ -152,15 +156,11 @@ export default function AddProject() {
                 }
             );
             const data = await res.json();
-            if (res.ok) {
-                message.success("Projet ajouté avec succès !");
-            } else {
+            if (res.ok) message.success("Projet ajouté avec succès !");
+            else
                 message.error(
-                    data?.detail ||
-                        data?.description ||
-                        "Échec lors de la création du projet"
+                    data?.detail || data?.description || "Échec de la création"
                 );
-            }
         } catch (err) {
             console.error(err);
             message.error("Erreur inattendue.");
@@ -169,22 +169,14 @@ export default function AddProject() {
         }
     };
 
-    /* ---------------- JSX ---------------- */
     return (
         <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-200/50 via-blue-100 to-indigo-300 px-4 py-10 overflow-hidden">
-            {/* blobs décoratifs */}
-            <div className="pointer-events-none absolute -top-32 -left-28 h-80 w-80 rounded-full bg-indigo-300 opacity-30 blur-3xl" />
-            <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 translate-x-1/3 translate-y-1/3 rounded-full bg-purple-300 opacity-20 blur-3xl" />
-
-            {/* carte */}
+            {/* Carte centrée */}
             <section
                 ref={cardRef}
                 className="relative w-full max-w-xl overflow-hidden rounded-3xl bg-white/70 p-6 shadow-2xl backdrop-blur-md md:p-8"
             >
-                <Title
-                    level={2}
-                    className="mb-6 !text-center !text-3xl !font-extrabold !text-indigo-700 md:!text-4xl"
-                >
+                <Title level={2} className="mb-6 text-center text-indigo-700">
                     Ajout d’un projet 🖼️
                 </Title>
 
@@ -200,10 +192,7 @@ export default function AddProject() {
                             { required: true, message: "Le titre est requis" },
                         ]}
                     >
-                        <Input
-                            placeholder="Titre du projet"
-                            className="focus:ring-indigo-400"
-                        />
+                        <Input placeholder="Titre du projet" />
                     </Form.Item>
 
                     <Form.Item
@@ -219,7 +208,6 @@ export default function AddProject() {
                         <Input.TextArea
                             rows={4}
                             placeholder="Description du projet"
-                            className="focus:ring-indigo-400"
                         />
                     </Form.Item>
 
@@ -233,7 +221,7 @@ export default function AddProject() {
                         <InputNumber
                             min={1900}
                             max={3000}
-                            className="w-full focus:ring-indigo-400"
+                            className="w-full"
                             placeholder="2024"
                         />
                     </Form.Item>
@@ -245,10 +233,7 @@ export default function AddProject() {
                             { required: true, message: "Le lien est requis" },
                         ]}
                     >
-                        <Input
-                            placeholder="https://..."
-                            className="focus:ring-indigo-400"
-                        />
+                        <Input placeholder="https://..." />
                     </Form.Item>
 
                     <Form.Item
@@ -261,10 +246,7 @@ export default function AddProject() {
                             },
                         ]}
                     >
-                        <Input
-                            placeholder="React, Node.js, ..."
-                            className="focus:ring-indigo-400"
-                        />
+                        <Input placeholder="React, Node.js, ..." />
                     </Form.Item>
 
                     <Form.Item
@@ -283,33 +265,27 @@ export default function AddProject() {
                             placeholder="Sélectionnez les étudiants"
                             optionLabelProp="label"
                         >
-                            {Array.isArray(availableStudents) &&
-                                availableStudents.map((student) => (
-                                    <Select.Option
-                                        key={student.id}
-                                        value={student.id}
-                                        label={`${student.name} ${student.surname}`}
-                                    >
-                                        {student.name} {student.surname}
-                                    </Select.Option>
-                                ))}
+                            {availableStudents.map((s) => (
+                                <Select.Option
+                                    key={s.id}
+                                    value={s.id}
+                                    label={`${s.name} ${s.surname}`}
+                                >
+                                    {s.name} {s.surname}
+                                </Select.Option>
+                            ))}
                         </Select>
                     </Form.Item>
 
-                    <Form.Item label="Image (une seule possible ici)">
-                        <input
-                            type="file"
-                            name="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
-                        {imagePreviews[0] && (
-                            <img
-                                src={imagePreviews[0]}
-                                alt="Aperçu"
-                                style={{ maxWidth: "100%", marginTop: 10 }}
-                            />
-                        )}
+                    <Form.Item label="Images (plusieurs aperçus)">
+                        <Upload {...uploadProps}>
+                            {fileList.length < 5 && (
+                                <div>
+                                    <PlusOutlined />
+                                    <div style={{ marginTop: 8 }}>Ajouter</div>
+                                </div>
+                            )}
+                        </Upload>
                     </Form.Item>
 
                     <Form.Item
@@ -317,7 +293,6 @@ export default function AddProject() {
                         name="isActive"
                         valuePropName="checked"
                         initialValue={true}
-                        className="m-0"
                     >
                         <Switch />
                     </Form.Item>
@@ -327,7 +302,7 @@ export default function AddProject() {
                             type="primary"
                             htmlType="submit"
                             loading={loading}
-                            className="cta-btn mt-2 w-full transform rounded-lg bg-indigo-600 transition hover:-translate-y-0.5 hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-400/50 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="cta-btn w-full bg-indigo-600"
                         >
                             Ajouter
                         </Button>

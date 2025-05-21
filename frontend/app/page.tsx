@@ -167,7 +167,7 @@ export default function ProjectHomePage() {
                                     cover={
                                         <Image
                                             alt={project.title}
-                                            src={project.media[0]}
+                                            src={`${process.env.NEXT_PUBLIC_API_URL}${project.media[0]?.contentUrl}`}
                                             preview={false}
                                             style={{
                                                 height: 200,

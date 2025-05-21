@@ -20,6 +20,7 @@ import {
 import { PlusOutlined } from "@ant-design/icons";
 import { getToken } from "@/utils/jwt";
 import { gsap } from "gsap";
+import { useRouter } from "next/navigation";
 
 const { Title } = Typography;
 
@@ -31,6 +32,7 @@ export default function AddProject() {
         { id: string; name: string; surname: string }[]
     >([]);
     const cardRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
 
     // Animation d'entrée
     useLayoutEffect(() => {
@@ -166,6 +168,7 @@ export default function AddProject() {
             message.error("Erreur inattendue.");
         } finally {
             setLoading(false);
+            router.push("/admin/projects");
         }
     };
 

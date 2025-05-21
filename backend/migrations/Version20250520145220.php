@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250520074122 extends AbstractMigration
+final class Version20250520145220 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,7 +21,7 @@ final class Version20250520074122 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE project ADD title VARCHAR(255) NOT NULL
+            ALTER TABLE user CHANGE roles roles JSON NOT NULL
         SQL);
     }
 
@@ -29,7 +29,7 @@ final class Version20250520074122 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE project DROP title
+            ALTER TABLE user CHANGE roles roles LONGTEXT NOT NULL COLLATE `utf8mb4_bin`
         SQL);
     }
 }

@@ -151,9 +151,10 @@ export default function AddProject() {
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files ? e.target.files[0] : null;
+        const file = e.target.files;
         if (file) {
             const formData = new FormData();
+            
             formData.append("file", file);
 
             console.log(file);

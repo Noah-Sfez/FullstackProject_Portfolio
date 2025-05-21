@@ -4,6 +4,10 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\StudentRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,7 +16,30 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: StudentRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Acces refused : you are not allowed to see students.'
+        ),
+        new Post(
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Acces refused : you are not allowed to create this student.'
+        ),
+        new GetCollection(
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Acces refused : you are not allowed to see this student.'
+        ),
+        new Patch(
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Acces refused : you are not allowed to update this student.'
+        ),
+        new Delete(
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Acces refused : you are not allowed to delete this student.'
+        ),
+    ],
+)]
 class Student
 {
     #[ORM\Id]

@@ -25,28 +25,28 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
         'max_depth' => 2
     ],
     denormalizationContext: ['groups' => ['write']],
-    // operations: [
-    //     new GetCollection(
-    //         security: "is_granted('ROLE_USER')",
-    //         securityMessage: 'Acces refused : you are not allowed to see this project.'
-    //     ),
-    //     new Post(
-    //         security: "is_granted('ROLE_ADMIN')",
-    //         securityMessage: 'Acces refused : you are not allowed to create this project.'
-    //     ),
-    //     new GetCollection(
-    //         security: "is_granted('ROLE_USER') or object.owner == user",
-    //         securityMessage: 'Acces refused : you are not allowed to see this project.'
-    //     ),
-    //     new Patch(
-    //         security: "is_granted('ROLE_ADMIN') or object.owner == user",
-    //         securityMessage: 'Acces refused : you are not allowed to update this project.'
-    //     ),
-    //     new Delete(
-    //         security: "is_granted('ROLE_ADMIN') or object.owner == user",
-    //         securityMessage: 'Acces refused : you are not allowed to delete this project.'
-    //     ),
-    // ],
+    operations: [
+        new GetCollection(
+            security: "is_granted('ROLE_USER')",
+            securityMessage: 'Acces refused : you are not allowed to see this project.'
+        ),
+        new Post(
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Acces refused : you are not allowed to create this project.'
+        ),
+        new GetCollection(
+            security: "is_granted('ROLE_USER') or object.owner == user",
+            securityMessage: 'Acces refused : you are not allowed to see this project.'
+        ),
+        new Patch(
+            security: "is_granted('ROLE_ADMIN') or object.owner == user",
+            securityMessage: 'Acces refused : you are not allowed to update this project.'
+        ),
+        new Delete(
+            security: "is_granted('ROLE_ADMIN') or object.owner == user",
+            securityMessage: 'Acces refused : you are not allowed to delete this project.'
+        ),
+    ],
 )]
 class Project
 {

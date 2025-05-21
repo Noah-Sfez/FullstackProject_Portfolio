@@ -22,7 +22,6 @@ import {
 } from "@ant-design/icons";
 import { Project } from "@/model/Project";
 import { gsap } from "gsap";
-import { getToken } from "@/utils/jwt";
 
 export default function AdminProjectsPage() {
   /* ---------------- State ---------------- */
@@ -33,14 +32,7 @@ export default function AdminProjectsPage() {
 
   /* ---------------- Fetch projects ---------------- */
   const fetchProjects = async () => {
-    const token = await getToken();
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`);
     try {
       const data = await res.json();
       console.log("Réponse API projets admin :", data);

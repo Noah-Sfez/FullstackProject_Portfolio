@@ -17,28 +17,28 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: StudentRepository::class)]
 #[ApiResource(
-    operations: [
-        new GetCollection(
-            security: "is_granted('ROLE_ADMIN')",
-            securityMessage: 'Acces refused : you are not allowed to see students.'
-        ),
-        new Post(
-            security: "is_granted('ROLE_ADMIN')",
-            securityMessage: 'Acces refused : you are not allowed to create this student.'
-        ),
-        new GetCollection(
-            security: "is_granted('ROLE_ADMIN')",
-            securityMessage: 'Acces refused : you are not allowed to see this student.'
-        ),
-        new Patch(
-            security: "is_granted('ROLE_ADMIN')",
-            securityMessage: 'Acces refused : you are not allowed to update this student.'
-        ),
-        new Delete(
-            security: "is_granted('ROLE_ADMIN')",
-            securityMessage: 'Acces refused : you are not allowed to delete this student.'
-        ),
-    ],
+    // operations: [
+    //     new GetCollection(
+    //         security: "is_granted('ROLE_ADMIN')",
+    //         securityMessage: 'Acces refused : you are not allowed to see students.'
+    //     ),
+    //     new Post(
+    //         security: "is_granted('ROLE_ADMIN')",
+    //         securityMessage: 'Acces refused : you are not allowed to create this student.'
+    //     ),
+    //     new GetCollection(
+    //         security: "is_granted('ROLE_ADMIN')",
+    //         securityMessage: 'Acces refused : you are not allowed to see this student.'
+    //     ),
+    //     new Patch(
+    //         security: "is_granted('ROLE_ADMIN')",
+    //         securityMessage: 'Acces refused : you are not allowed to update this student.'
+    //     ),
+    //     new Delete(
+    //         security: "is_granted('ROLE_ADMIN')",
+    //         securityMessage: 'Acces refused : you are not allowed to delete this student.'
+    //     ),
+    // ],
 )]
 class Student
 {

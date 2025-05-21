@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
@@ -13,11 +14,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 #[ApiResource(
     forceEager: false,
-    normalizationContext: ['groups' => ['read']],
+    normalizationContext: [
+        'groups' => ['read'],
+        'enable_max_depth' => true,
+        'max_depth' => 2
+    ],
     denormalizationContext: ['groups' => ['write']],
     // operations: [
     //     new GetCollection(
@@ -67,13 +73,17 @@ class Project
      */
     #[ORM\ManyToMany(targetEntity: Student::class, inversedBy: 'projects')]
     #[Groups(groups: ['read', 'write'])]
+    #[ApiProperty(fetchEager: false)]
+    #[MaxDepth(1)]
     private Collection $student;
 
     /**
      * @var Collection<int, Media>
      */
-    #[ORM\ManyToMany(targetEntity: Media::class, mappedBy: 'projects')]
+    #[ORM\ManyToMany(targetEntity: Media::class, inversedBy: 'projects')]
     #[Groups(groups: ['read', 'write'])]
+    #[ApiProperty(fetchEager: false)]
+    #[MaxDepth(1)]
     private Collection $media;
 
     #[ORM\Column]

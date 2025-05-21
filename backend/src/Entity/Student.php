@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\StudentRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass: StudentRepository::class)]
 #[ApiResource]
@@ -31,7 +33,9 @@ class Student
      * @var Collection<int, Project>
      */
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'student')]
-    #[Groups(groups: ['read', 'write'])]
+    #[Groups(groups: ['read'])]
+    #[ApiProperty(fetchEager: false)]
+    #[MaxDepth(1)]
     private Collection $projects;
 
     public function __construct()

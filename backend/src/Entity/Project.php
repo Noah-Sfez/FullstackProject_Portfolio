@@ -35,15 +35,15 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
             securityMessage: 'Acces refused : you are not allowed to create this project.'
         ),
         new GetCollection(
-            security: "is_granted('ROLE_USER') or object.owner == user",
+            security: "is_granted('ROLE_USER')",
             securityMessage: 'Acces refused : you are not allowed to see this project.'
         ),
         new Patch(
-            security: "is_granted('ROLE_ADMIN') or object.owner == user",
+            security: "is_granted('ROLE_ADMIN')",
             securityMessage: 'Acces refused : you are not allowed to update this project.'
         ),
         new Delete(
-            security: "is_granted('ROLE_ADMIN') or object.owner == user",
+            security: "is_granted('ROLE_ADMIN')",
             securityMessage: 'Acces refused : you are not allowed to delete this project.'
         ),
     ],

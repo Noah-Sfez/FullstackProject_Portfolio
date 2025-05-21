@@ -1,13 +1,4 @@
 "use client";
-/* ------------------------------------------------------------------
-   Admin – Liste des projets + Modal « Ajouter un étudiant » 💼🎓
-   ------------------------------------------------------------------
-   • Carte glass avec table des projets
-   • Boutons : nouveau projet + ajouter un étudiant
-   • Clique « Ajouter un étudiant » ➜ ouvre une Modal Ant Design contenant
-     un formulaire (Prénom, Nom, Année, Email)
-   • Animations GSAP conservées (fade-in carte, pulse boutons)
-------------------------------------------------------------------- */
 
 import { useEffect, useState, useLayoutEffect, useRef } from "react";
 import {
@@ -44,10 +35,11 @@ export default function AdminProjectsPage() {
         const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/projects`
         );
-        const text = await res.text();
         try {
-            const data = JSON.parse(text);
-            setProjects(data["hydra:member"] || data);
+            const data = await res.json();
+            console.log("Réponse API projets admin :", data);
+            const parsed = data["hydra:member"] || data.member || data;
+            setProjects(Array.isArray(parsed) ? parsed : []);
         } catch (error) {
             console.error("Erreur de parsing JSON :", error);
         }
@@ -133,17 +125,24 @@ export default function AdminProjectsPage() {
         try {
             const apiUrl =
                 process.env.NEXT_PUBLIC_API_URL || "https://127.0.0.1:8000";
+            // Ajoute le champ projects comme attendu par l'API
+            const payload = {
+                ...values,
+                projects: [],
+            };
             const res = await fetch(`${apiUrl}/api/students`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(values),
+                headers: { "Content-Type": "application/ld+json" },
+                body: JSON.stringify(payload),
             });
             console.log(res);
-            console.log(values);
+            console.log(payload);
             if (res.ok) {
                 message.success("Étudiant ajouté avec succès !");
                 setStudentModalOpen(false);
             } else {
+                const errorData = await res.json();
+                console.error(errorData);
                 message.error("Erreur lors de l'ajout de l'étudiant");
             }
         } catch (err) {

@@ -1,11 +1,6 @@
 "use client";
 /* ------------------------------------------------------------------
    Page « Ajout d’un projet » revisitée 🎨✨
-   ------------------------------------------------------------------
-   • Layout plein écran avec gradient / blobs
-   • Carte glass-morphism centrée
-   • Ant Design conservé (Input, Upload, Switch…)
-   • Fade-in de la carte + pulse sur le CTA (GSAP optionnel)
 ------------------------------------------------------------------- */
 
 import { useState, useLayoutEffect, useRef, useEffect } from "react";
@@ -15,16 +10,11 @@ import {
     Button,
     message,
     Typography,
-    Upload,
     Switch,
     InputNumber,
-    UploadProps,
-    Space,
     Select,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
 import { getToken } from "@/utils/jwt";
-import { Project } from "@/model/Project";
 import { gsap } from "gsap";
 
 const { Title } = Typography;
@@ -32,8 +22,8 @@ const { Title } = Typography;
 export default function AddProject() {
     /* ---------------- State ---------------- */
     const [loading, setLoading] = useState(false);
-    const [imageUrls, setImageUrls] = useState<string[]>([]);
-    const [students, setStudents] = useState<string[]>([]); // IDs sélectionnés
+    const [imageIris, setImageIris] = useState<string[]>([]); // IRIs envoyés à l'API
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]); // URLs pour affichage
     const [availableStudents, setAvailableStudents] = useState<
         { id: string; name: string; surname: string }[]
     >([]);
@@ -78,27 +68,77 @@ export default function AddProject() {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/students`)
             .then((res) => res.json())
             .then((data) => {
-                // Adapter selon la structure de retour de l'API
-                setAvailableStudents(data["hydra:member"] || data);
-            });
+                setAvailableStudents(
+                    Array.isArray(data.member) ? data.member : []
+                );
+            })
+            .catch(() => setAvailableStudents([]));
     }, []);
 
-    /* --------------- Handlers --------------- */
+    /* --------------- File Upload Handler --------------- */
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const token = await getToken();
+                const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/media`,
+                    {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                        body: formData,
+                    }
+                );
+                const data = await res.json();
+                console.log("Réponse upload image :", data);
+
+                // Correction ici ! On construit l'IRI manuellement :
+                if (res.ok && data.media && data.media.id) {
+                    setImageIris((prev) => [
+                        ...prev,
+                        `/api/media/${data.media.id}`,
+                    ]);
+                    // Si tu as une url d'affichage tu peux la mettre ici, sinon laisse vide
+                    // setImagePreviews((prev) => [...prev, data.media.contentUrl]);
+                    message.success("Image uploadée avec succès !");
+                } else {
+                    message.error(
+                        data.description || "Erreur lors de l'upload de l'image"
+                    );
+                }
+            } catch (err) {
+                console.error(err);
+                message.error("Erreur lors de l'upload de l'image");
+            }
+        }
+    };
+
+    /* --------------- Submit Handler --------------- */
     const handleSubmit = async (values: any) => {
         setLoading(true);
+
         try {
             const token = await getToken();
+
+            // Construction du payload
             const body = {
                 title: values.title,
                 description: values.description,
-                date: Number(values.date),
+                date: values.date,
                 techno: values.techno,
-                students: students.map((id) => `api/students/${id}`),
-                media: imageUrls,
-                isActive: values.isActive,
+                student: values.students?.map((id) => `/api/students/${id}`), // CLÉ SINGULIER !
+                isActive: values.isActive ?? true,
                 link: values.link,
+                media: imageIris,
             };
-            console.log("Body envoyé :", body); // <-- Ajoute ceci
+
+            // DEBUG PAYLOAD
+            console.log("Payload envoyé :", body);
 
             const res = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/projects`,
@@ -111,51 +151,21 @@ export default function AddProject() {
                     body: JSON.stringify(body),
                 }
             );
-            console.log(res);
-
             const data = await res.json();
-            if (res.ok) message.success("Projet ajouté avec succès !");
-            else
+            if (res.ok) {
+                message.success("Projet ajouté avec succès !");
+            } else {
                 message.error(
-                    data.description || "Échec lors de la création du projet"
+                    data?.detail ||
+                        data?.description ||
+                        "Échec lors de la création du projet"
                 );
+            }
         } catch (err) {
             console.error(err);
             message.error("Erreur inattendue.");
         } finally {
             setLoading(false);
-        }
-    };
-    
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files;
-        if (file) {
-            const formData = new FormData();
-
-            // formData.append("filePath", file[0]);
-
-            formData.append("file", file[0]);
-
-            console.log(file);
-
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/media`, {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${getToken()}`,
-                    // ContentType: "multipart/form-data",
-                },
-                body: formData,
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    setImageUrls((prev) => [...prev, data.url]);
-                    message.success("Images uploadées avec succès !");
-                })
-                .catch((err) => {
-                    console.error(err);
-                    message.error("Erreur lors de l'upload des images");
-                });
         }
     };
 
@@ -257,74 +267,49 @@ export default function AddProject() {
                         />
                     </Form.Item>
 
-                    <Space>
-                        <label className="block font-medium mb-1">
-                            Étudiants
-                        </label>
-                        {students.map((student, idx) => (
-                            <div key={idx} className="mb-2 flex gap-2">
-                                <Input
-                                    placeholder="Nom"
-                                    value={students}
-                                    // onChange={(e) =>
-                                    //     handleStudentChange(
-                                    //         idx,
-                                    //         "name",
-                                    //         e.target.value
-                                    //     )
-                                    // }
-                                    className="focus:ring-indigo-400"
-                                />
-                                <Input
-                                    placeholder="Prénom"
-                                    value={students}
-                                    // onChange={(e) =>
-                                    //     handleStudentChange(
-                                    //         idx,
-                                    //         "surname",
-                                    //         e.target.value
-                                    //     )
-                                    // }
-                                    className="focus:ring-indigo-400"
-                                />
-                                {/* Optionnel: gestion des projets */}
-                            </div>
-                        ))}
-                        <Button type="dashed" className="mt-1">
-                            Ajouter un étudiant
-                        </Button>
-                    </Space>
-                    <Select
-                        mode="multiple"
-                        allowClear
-                        placeholder="Sélectionnez les étudiants"
-                        value={students}
-                        onChange={setStudents}
-                        className="w-full"
-                        optionLabelProp="label"
+                    <Form.Item
+                        label="Étudiants"
+                        name="students"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Sélectionnez au moins un étudiant",
+                            },
+                        ]}
                     >
-                        {/* {availableStudents?.map((student) => (
-                            <Select.Option
-                                key={student.id}
-                                value={student.id}
-                                label={`${student.name} ${student.surname}`}
-                            >
-                                {student.name} {student.surname}
-                            </Select.Option>
-                        ))} */}
-                    </Select>
+                        <Select
+                            mode="multiple"
+                            allowClear
+                            placeholder="Sélectionnez les étudiants"
+                            optionLabelProp="label"
+                        >
+                            {Array.isArray(availableStudents) &&
+                                availableStudents.map((student) => (
+                                    <Select.Option
+                                        key={student.id}
+                                        value={student.id}
+                                        label={`${student.name} ${student.surname}`}
+                                    >
+                                        {student.name} {student.surname}
+                                    </Select.Option>
+                                ))}
+                        </Select>
+                    </Form.Item>
 
-                    <Form.Item label="Images (plusieurs possibles)">
-                        {/* <Upload {...props}>
-                            <Button icon={<UploadOutlined />}>
-                                Uploader des images
-                            </Button>
-                        </Upload> */}
+                    <Form.Item label="Image (une seule possible ici)">
                         <input
                             type="file"
                             name="file"
+                            accept="image/*"
                             onChange={handleFileChange}
                         />
+                        {imagePreviews[0] && (
+                            <img
+                                src={imagePreviews[0]}
+                                alt="Aperçu"
+                                style={{ maxWidth: "100%", marginTop: 10 }}
+                            />
+                        )}
                     </Form.Item>
 
                     <Form.Item
